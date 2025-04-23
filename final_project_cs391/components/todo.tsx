@@ -16,6 +16,7 @@ type Task = {
   id: number;
   text: string;
   dueDate?: string;
+  completed: boolean;
 };
 
 export default function TodoList() {
@@ -29,10 +30,17 @@ export default function TodoList() {
       id: Date.now(),
       text: newTaskText,
       dueDate: newTaskDueDate || undefined,
+      completed: false,
     };
     setTasks([...tasks, newTask]);
     setNewTaskText('');
     setNewTaskDueDate('');
+  };
+
+  const toggleComplete = (id: number) => {
+    setTasks(tasks.map(task =>
+      task.id === id ? { ...task, completed: !task.completed } : task
+    ));
   };
 
   const sortedTasks = [...tasks].sort((a, b) => {
@@ -65,11 +73,18 @@ export default function TodoList() {
       </div>
       <ul className="space-y-2">
         {sortedTasks.map((task) => (
-          <li key={task.id} className="border p-2 rounded">
-            <div className="font-semibold">{task.text}</div>
-            {task.dueDate && (
-              <div className="text-sm text-gray-500">Due: {task.dueDate}</div>
-            )}
+          <li key={task.id} className="border p-2 rounded flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={task.completed}
+              onChange={() => toggleComplete(task.id)}
+            />
+            <div className={`flex-1 ${task.completed ? 'line-through text-gray-500' : ''}`}>
+              <div className="font-semibold">{task.text}</div>
+              {task.dueDate && (
+                <div className="text-sm">{`Due: ${task.dueDate}`}</div>
+              )}
+            </div>
           </li>
         ))}
       </ul>
