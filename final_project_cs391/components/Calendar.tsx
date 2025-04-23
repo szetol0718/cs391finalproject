@@ -75,7 +75,7 @@ const DayHeader = styled.div`
   padding: 0.5rem 0;
 `;
 
-const DayCircle = styled.div<{ bg: string; isToday?: boolean }>`
+const DayCircle = styled(({ isToday, ...rest }) => <div {...rest} />)<{ bg: string; isToday?: boolean }>`
   height: 70px;
   width: 70px;
   border-radius: 50%;
@@ -116,7 +116,7 @@ const Calendar: React.FC = () => {
     );
   });
 
-  return (
+  return ( 
     <Wrapper>
       <Header>
         <NavButton onClick={goPrevMonth}>← Prev</NavButton>

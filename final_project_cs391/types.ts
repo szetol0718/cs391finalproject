@@ -1,4 +1,11 @@
-types.ts:
+export type NoteType = {
+    note: string,
+    id: number,
+}
+
+export type NumNotes = {
+    max?: number,
+}
 
 //individual habits
 export type HType = //different types of habits user can track
