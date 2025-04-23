@@ -22,7 +22,6 @@
  * to support integration with data (e.g., habits, notes) per date and may be extended
  * with additional logic for interactivity, form inputs, and dynamic indicators.
  */
-
 'use client';
 import React, { useState } from 'react';
 import styled from 'styled-components';

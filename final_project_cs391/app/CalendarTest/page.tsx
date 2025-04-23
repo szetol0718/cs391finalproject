@@ -8,7 +8,6 @@ const TestCalendarPage = () => {
   return (
     <div style={{ padding: '2rem' }}>
       <h1>Calendar Component Test</h1>
-      <p>This page tests both the full month and interactive week views.</p>
       <Calendar />
     </div>
   );
