@@ -1,3 +1,5 @@
+//author: Leigh Brown
+
 "use client";
 
 import ArchiveDisplay from "@/components/archiveDisplay";
@@ -7,7 +9,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/header";
 import HabitTrackerHeader from "@/components/HabitHeader";
 
-export default function HabitTrackerPage() {
+export default function ArchivePage() {
     const [archive, setArchive] = useState<ArchiveProps[]>([]);
 
     useEffect(() => {

@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4c5455a5-3abc-47cd-98a8-ec9f422add26" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/final_project_cs391/app/habit-tracker/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/final_project_cs391/components/header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/final_project_cs391/components/header.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="4c5455a5-3abc-47cd-98a8-ec9f422add26" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -119,5 +116,17 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/final_project_cs391/app/archive/page.tsx</url>
+          <line>2</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
