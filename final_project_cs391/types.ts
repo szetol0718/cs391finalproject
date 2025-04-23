@@ -1,16 +1,13 @@
-// Notes types -- Ajani Hickling
-// NoteType is designated type for Notes component
 export type NoteType = {
     note: string,
     id: number,
 }
 
-// NumNotes type contains prop for an optional max number of notes to enter or display
 export type NumNotes = {
     max?: number,
 }
 
-// individual habits
+//individual habits
 export type HType = //different types of habits user can track
     "Health + Wellness" |
     "Household" |
@@ -48,4 +45,4 @@ export type ArchiveProps = {
     weekStart: string;
     weekEnd: string;
     habits: HabitProps[];
-}
+};
