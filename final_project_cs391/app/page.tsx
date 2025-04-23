@@ -1,9 +1,10 @@
-// Authour: Ajani Hickling
+// Authour: Ajani Hickling, Arooj Kamran
 // Description: Homepage hosts Calendar component, as well as preview versions of other pages,
 // namely, the Notes and To-Do pages
 
 import Notes from "@/components/notes";
 import Calendar from "@/components/Calendar";
+import TodoList from "@/components/todo"; 
 
 const noteProps = {
     max:3, // comment out max prop to show all notes, or adjust number for more notes
@@ -19,6 +20,7 @@ export default function Home() {
           <div className={`flex flex-col gap-10`}>
               <Notes props={noteProps}></Notes>
               {/* TO DO DISPLAY GOES HERE*/}
+              <TodoList />
           </div>
       </div>
   );
