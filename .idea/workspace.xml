@@ -122,7 +122,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/final_project_cs391/app/archive/page.tsx</url>
-          <line>2</line>
+          <line>4</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
