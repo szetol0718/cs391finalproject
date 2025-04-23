@@ -1,111 +1,138 @@
-//  Calendar Component
-// Author: Yat Long(Louis) Szeto
-// Displays a flexible calendar grid view.
-// Props:
-//   - numOfDays: number of days to display (e.g., 14 for mini, 30 for full)
-//   - view: 'mini' or 'full' layout style
-// Reused across Home and Habit Tracker pages.
-// Styled using styled-components for CS391 Final Project.
+/**
+ * Calendar Component
+ * Author: Yat Long (Louis) Szeto
+ * 
+ * Description:
+ * A dynamic and interactive calendar component for the CS391 Final Project.
+ * This component displays a real monthly calendar view aligned by weekdays (Monday to Sunday),
+ * with support for navigating between months.
+ * 
+ * Features:
+ * - Displays the actual number of days in each month using dayjs
+ * - Aligns dates correctly based on the first weekday of the month
+ * - Highlights the current day
+ * - Month navigation (← / → buttons)
+ * 
+ * Styling:
+ * - Fully styled using styled-components
+ * - Light-colored, circular date tiles with hover effects
+ * 
+ * Usage:
+ * This calendar is reused across the Home and Habit Tracker pages. It is designed
+ * to support integration with data (e.g., habits, notes) per date and may be extended
+ * with additional logic for interactivity, form inputs, and dynamic indicators.
+ */
 
-//example of usage: <Calendar numOfDays={30} view="full" /> ,<Calendar numOfDays={14} view="mini" />
-'use client'; 
+'use client';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+
+const rainbowColors = [
+  '#ffd6d6', // Red - Mon
+  '#fff1cb', // Orange - Tue
+  '#f9ffd6', // Yellow - Wed
+  '#d9f4dc', // Green - Thu
+  '#cbe7f8', // Blue - Fri
+  '#e6d8ff', // Indigo - Sat
+  '#ffcde1', // Violet - Sun
+];
 
 const Wrapper = styled.div`
-  display: flex;
-  gap: 2rem;
-  max-width: 800px;
+  max-width: 700px;
   margin: 2rem auto;
+  text-align: center;
 `;
 
-const WeekList = styled.div`
+const Header = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:1rem;
 `;
 
-const WeekButton = styled.button<{ active: boolean }>`
-  padding: 0.75rem 1rem;
-  background: ${({ active }) => (active ? '#ddd' : '#f5f5f5')};
-  border: 1px solid #ccc;
-  border-radius: 6px;
+const NavButton = styled.button`
+  padding: 0.5rem 1rem;
+  background: #eee;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.3s;
+  font-weight: bold;
 
   &:hover {
-    background: #eee;
+    background: #ddd;
   }
 `;
 
-const CalendarPanel = styled.div`
-  flex-grow: 1;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
 `;
 
-const DayCircle = styled.div<{ bg: string }>`
-  width: 70px;
+const DayHeader = styled.div`
+  font-weight: bold;
+  text-align: center;
+  padding: 0.5rem 0;
+`;
+
+const DayCircle = styled.div<{ bg: string; isToday?: boolean }>`
   height: 70px;
+  width: 70px;
   border-radius: 50%;
-  background-color: ${({ bg }) => bg};
+  background: ${({ isToday, bg }) => (isToday ? '#ffcf77' : bg)};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  color: #333;
+  font-weight: 500;
+  margin: 0 auto;
+  transition: background 0.3s ease;
+  box-shadow: ${({ isToday }) =>
+    isToday ? '0 0 0 3px #ffb347, 0 0 10px rgba(255, 195, 0, 0.3)' : 'none'};
 `;
 
-const pastelColors = ['#ffd6d6', '#ffeecb', '#d9f4dc', '#cbe7f8', '#e6d8ff', '#fff1cb', '#ffcde1'];
+const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const Calendar: React.FC = () => {
-  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const today = dayjs();
+  const [month, setMonth] = useState<Dayjs>(today.startOf('month'));
 
-  const renderFullMonth = () => {
-    const days = Array.from({ length: 30 }, (_, i) => i + 1);
-    return days.map((day) => (
-      <DayCircle key={day} bg="#f0f0f0">
-        {day}
-      </DayCircle>
-    ));
-  };
+  const startDay = (month.day() + 6) % 7;
+  const daysInMonth = month.daysInMonth();
 
-  const renderWeek = (weekIndex: number) => {
-    const weekStart = weekIndex * 7 + 1;
-    const weekDays = Array.from({ length: 7 }, (_, i) => weekStart + i);
-    return weekDays.map((day, i) => (
-      <DayCircle key={day} bg={pastelColors[i % pastelColors.length]}>
-        {day}
+  const goPrevMonth = () => setMonth(month.subtract(1, 'month'));
+  const goNextMonth = () => setMonth(month.add(1, 'month'));
+
+  const blanks = Array.from({ length: startDay }, (_, i) => <div key={`blank-${i}`} />);
+  const days = Array.from({ length: daysInMonth }, (_, i) => {
+    const currentDate = month.add(i, 'day');
+    const isToday = currentDate.isSame(today, 'day');
+    const weekdayIndex = (currentDate.day() + 6) % 7; // 0 = Monday
+    const bg = rainbowColors[weekdayIndex];
+
+    return (
+      <DayCircle key={i} isToday={isToday} bg={bg}>
+        {currentDate.date()}
       </DayCircle>
-    ));
-  };
+    );
+  });
 
   return (
     <Wrapper>
-      <WeekList>
-        {[1, 2, 3, 4].map((week) => (
-          <WeekButton
-            key={week}
-            active={selectedWeek === week}
-            onClick={() => setSelectedWeek(week === selectedWeek ? null : week)}
-          >
-            Week {week}
-          </WeekButton>
-        ))}
-      </WeekList>
+      <Header>
+        <NavButton onClick={goPrevMonth}>← Prev</NavButton>
+        <h2>{month.format('MMMM YYYY')}</h2>
+        <NavButton onClick={goNextMonth}>Next →</NavButton>
+      </Header>
 
-      <CalendarPanel>
-        {selectedWeek ? renderWeek(selectedWeek - 1) : renderFullMonth()}
-      </CalendarPanel>
+      <Grid>
+        {weekdayLabels.map((label) => (
+          <DayHeader key={label}>{label}</DayHeader>
+        ))}
+        {blanks.concat(days)}
+      </Grid>
     </Wrapper>
   );
 };
 
 export default Calendar;
-
-
