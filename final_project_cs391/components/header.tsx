@@ -16,7 +16,7 @@ export default function Header() {
         <Link href="/" className={navLinkStyle}>Home</Link>
         <Link href="/notes" className={navLinkStyle}>Notes</Link>
         <Link href="/todo" className={navLinkStyle}>To-Do</Link>
-          <Link href="/" className={navLinkStyle}>Habit Tracker</Link>
+          <Link href="/habit-tracker" className={navLinkStyle}>Habit Tracker</Link>
       </nav>
     </header>
   );
