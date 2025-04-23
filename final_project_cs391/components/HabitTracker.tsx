@@ -1,5 +1,15 @@
 //author: Leigh Brown
 //This is the habit tracker component. Here the user can change and track up to 10 habits using a table.
+// Table consists of 12 columns:
+// Col 1: Habit name - editable: user enters in the name of habit
+// Col 2: Habit type - 5 types of habits to choose from a select menu
+// Col 3: Habit Tracking - daily, weekly, and biweekly habits
+// Used also to track weekly completion
+// Col 4 - 10: - each day and it’s corresponding checkbox to mark completion
+// used for weekly completion
+// Col 11: weekly completion - displays the percentage of habit completed for that week
+// Col 12: optional notes on the habit
+
 
 "use client";
 import { useState, useEffect } from "react";
@@ -19,7 +29,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Check
 
 export default function HabitTracker() {
     type HabitWithLocalNotes = HabitProps & { localNotes?: string, localHabits?: string };
-    //need this to fix how I update notes and the habit name
+    //need this to fix how I update notes and the habit name so it doesn't call updateHabit with every single change a user makes
 
     const [rows, setRows] = useState<HabitWithLocalNotes[]>(defaultHabits); //initially was default habits but I changed it with tests
 
