@@ -9,109 +9,70 @@
 // (b) Render a new blank form for additional entries
 // Each goal can be marked completed via checkbox
 
-"use client"
-import { useState } from "react";
+"use client";
+import React, { useState } from 'react';
 
 type Task = {
   id: number;
   text: string;
-  type: "weekly" | "monthly";
-  due: string;       // Due date
-  completed: boolean;
+  dueDate?: string;
 };
 
 export default function TodoList() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [id, setId] = useState(0);
+  const [newTaskText, setNewTaskText] = useState('');
+  const [newTaskDueDate, setNewTaskDueDate] = useState('');
 
-  function handleSubmit(formData: FormData) {
-    const text = formData.get("task") as string;
-    const type = formData.get("type") as "weekly" | "monthly";
-    const due = formData.get("due") as string;
-
-    if (!text || !type || !due) return;
-
+  const addTask = () => {
+    if (newTaskText.trim() === '') return;
     const newTask: Task = {
-      id,
-      text,
-      type,
-      due,
-      completed: false,
+      id: Date.now(),
+      text: newTaskText,
+      dueDate: newTaskDueDate || undefined,
     };
-
     setTasks([...tasks, newTask]);
-    setId(id + 1);
-  }
+    setNewTaskText('');
+    setNewTaskDueDate('');
+  };
 
-  function toggleComplete(taskId: number) {
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
-  }
-
-  function TaskForm() {
-    return (
-      <form action={handleSubmit} className="flex flex-col gap-2 my-4 items-start">
-        <input
-          type="text"
-          name="task"
-          placeholder="Enter your goal..."
-          className="p-2 w-80 border border-gray-400 rounded"
-        />
-        <select name="type" className="p-2 border border-gray-400 rounded">
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-        <input
-          type="date"
-          name="due"
-          className="p-2 border border-gray-400 rounded"
-        />
-        <input
-          type="submit"
-          value="Add Goal"
-          className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-        />
-      </form>
-    );
-  }
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if (!a.dueDate && !b.dueDate) return 0;
+    if (!a.dueDate) return -1;
+    if (!b.dueDate) return 1;
+    return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+  });
 
   return (
-    <div className="w-full max-w-lg mx-auto">
-      <h2 className="text-xl font-semibold underline mb-3">Set Your Monthly and Weekly Goals</h2>
-      <TaskForm />
-      <div className="mt-4">
-        {["weekly", "monthly"].map(category => (
-          <div key={category} className="mb-4">
-            <h3 className="text-lg font-bold capitalize">{category} Goals</h3>
-            {tasks
-              .filter(task => task.type === category)
-              .map(task => (
-                <div key={task.id} className="flex items-center gap-3 ml-2 mb-2">
-                  <input
-                    type="checkbox"
-                    checked={task.completed}
-                    onChange={() => toggleComplete(task.id)}
-                  />
-                  <div className="flex flex-col">
-                    <span
-                      className={`${
-                        task.completed ? "line-through text-gray-400" : ""
-                      }`}
-                    >
-                      {task.text}
-                    </span>
-                    <span className="text-sm text-gray-600">
-                      Complete by: {task.due}
-                    </span>
-                  </div>
-                </div>
-              ))}
-          </div>
-        ))}
+    <div className="p-4 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Todo List</h1>
+      <div className="flex flex-col gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="New task"
+          value={newTaskText}
+          onChange={(e) => setNewTaskText(e.target.value)}
+          className="p-2 border rounded"
+        />
+        <input
+          type="date"
+          value={newTaskDueDate}
+          onChange={(e) => setNewTaskDueDate(e.target.value)}
+          className="p-2 border rounded"
+        />
+        <button onClick={addTask} className="bg-blue-500 text-white p-2 rounded">
+          Add Task
+        </button>
       </div>
+      <ul className="space-y-2">
+        {sortedTasks.map((task) => (
+          <li key={task.id} className="border p-2 rounded">
+            <div className="font-semibold">{task.text}</div>
+            {task.dueDate && (
+              <div className="text-sm text-gray-500">Due: {task.dueDate}</div>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
