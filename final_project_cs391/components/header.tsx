@@ -1,20 +1,22 @@
-// Authors: Ajani Hickling,Arooj Kamran
+// Authors: Ajani Hickling, Arooj Kamran
 // Description: UI Header Component
-// hosts navigational links to sub-pages (to be implemented)
+// hosts navigational links to sub-pages
 
 import Link from "next/link";
 
-const headerTestStyle = `text-4xl font-semibold p-4 text-white w-screen mb-5 bg-teal-900`;
-const navLinkStyle = `text-white underline mx-4 text-lg`;
+const headerTextStyle = `text-4xl font-semibold p-4 text-white bg-teal-900`;
+const headerStyle = `bg-teal-900 w-screen flex flex-row items-center justify-between mb-8`
+const navLinkStyle = `text-white mx-5 mt-5 text-lg hover:text-yellow-300`;
 
 export default function Header() {
   return (
-    <header>
-      <h1 className={headerTestStyle}>Habit Tracker</h1>
+    <header className={headerStyle}>
+      <h1 className={headerTextStyle}>Habit Tracker</h1>
       <nav className="flex justify-center mb-4">
         <Link href="/" className={navLinkStyle}>Home</Link>
         <Link href="/notes" className={navLinkStyle}>Notes</Link>
         <Link href="/todo" className={navLinkStyle}>To-Do</Link>
+          <Link href="/" className={navLinkStyle}>Habit Tracker</Link>
       </nav>
     </header>
   );

@@ -46,13 +46,13 @@ export default function Notes({props}:{props:NumNotes}) {
     // Note-adding component: Form with text-input and submit burron
     function DefaultNote() {
         return(
-            <form action={handleSubmit}>
+            <form action={handleSubmit} className={`flex flex-row`}>
                 <input
                     type="text" id={"note"}
                     name={"note"}
                     placeholder={`Add a note...`}
                     onChange={()=>{}}
-                    className={`p-2 text-md w-80`}
+                    className={`p-2 text-md w-80 flex-2/3`}
                 />
                 <input
                     type="submit"
@@ -62,6 +62,7 @@ export default function Notes({props}:{props:NumNotes}) {
                     text-gray-900
                     bg-green-300 border-2
                     border-green-800 
+                    
                 `}
                 />
             </form>
