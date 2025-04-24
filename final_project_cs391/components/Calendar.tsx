@@ -7,16 +7,6 @@
  * This component displays a real monthly calendar view aligned by weekdays (Monday to Sunday),
  * with support for navigating between months.
  * 
- * Features:
- * - Displays the actual number of days in each month using dayjs
- * - Aligns dates correctly based on the first weekday of the month
- * - Highlights the current day
- * - Month navigation (← / → buttons)
- * 
- * Styling:
- * - Fully styled using styled-components
- * - Light-colored, circular date tiles with hover effects
- * 
  * Usage:
  * This calendar is reused across the Home and Habit Tracker pages. It is designed
  * to support integration with data (e.g., habits, notes) per date and may be extended
@@ -26,6 +16,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import dayjs, { Dayjs } from 'dayjs';
+import Link from 'next/link';
 
 const rainbowColors = [
   '#ffd6d6', // Red - Mon
@@ -85,9 +76,15 @@ const DayCircle = styled(({ isToday, ...rest }) => <div {...rest} />)<{ bg: stri
   justify-content: center;
   font-weight: 500;
   margin: 0 auto;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s;
   box-shadow: ${({ isToday }) =>
     isToday ? '0 0 0 3px #ffb347, 0 0 10px rgba(255, 195, 0, 0.3)' : 'none'};
+
+  &:hover {
+    background: ${({ isToday, bg }) => (isToday ? '#f5b942' : '#e0e0e0')};
+    transform: scale(1.05);
+    cursor: pointer;
+  }
 `;
 
 const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -104,15 +101,18 @@ const Calendar: React.FC = () => {
 
   const blanks = Array.from({ length: startDay }, (_, i) => <div key={`blank-${i}`} />);
   const days = Array.from({ length: daysInMonth }, (_, i) => {
-    const currentDate = month.add(i, 'day');
-    const isToday = currentDate.isSame(today, 'day');
-    const weekdayIndex = (currentDate.day() + 6) % 7; // 0 = Monday
-    const bg = rainbowColors[weekdayIndex];
-
+  const currentDate = month.add(i, 'day');
+  const isToday = currentDate.isSame(today, 'day');
+  const weekdayIndex = (currentDate.day() + 6) % 7; // 0 = Monday
+  const bg = rainbowColors[weekdayIndex];
+  const formattedDate = currentDate.format('YYYY-MM-DD');
+  
     return (
-      <DayCircle key={i} isToday={isToday} bg={bg}>
-        {currentDate.date()}
-      </DayCircle>
+      <Link key={i} href={`/date/${formattedDate}`} passHref>
+        <DayCircle as="button" type="button" isToday={isToday} bg={bg}>
+          {currentDate.date()}
+        </DayCircle>
+      </Link>
     );
   });
 
