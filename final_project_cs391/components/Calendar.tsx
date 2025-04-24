@@ -66,26 +66,28 @@ const DayHeader = styled.div`
   padding: 0.5rem 0;
 `;
 
-const DayCircle = styled(({ isToday, ...rest }) => <div {...rest} />)<{ bg: string; isToday?: boolean }>`
+const DayCircle = styled(({ istoday, ...props }) => <div {...props} />)<{ bg: string; istoday?: boolean }>`
   height: 70px;
   width: 70px;
   border-radius: 50%;
-  background: ${({ isToday, bg }) => (isToday ? '#ffcf77' : bg)};
+  background: ${({ istoday, bg }) => (istoday ? '#ffcf77' : bg)};
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
   margin: 0 auto;
-  transition: background 0.3s ease, transform 0.2s;
-  box-shadow: ${({ isToday }) =>
-    isToday ? '0 0 0 3px #ffb347, 0 0 10px rgba(255, 195, 0, 0.3)' : 'none'};
+  transition: background 0.3s ease, transform 0.25s, box-shadow 0.25s;
+  box-shadow: ${({ istoday }) =>
+    istoday ? '0 0 0 3px #ffb347, 0 0 10px rgba(255, 195, 0, 0.3)' : 'none'};
 
   &:hover {
-    background: ${({ isToday, bg }) => (isToday ? '#f5b942' : '#e0e0e0')};
-    transform: scale(1.05);
+    background: ${({ istoday, bg }) => (istoday ? '#f5b942' : '#d6e4ff')};
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
   }
 `;
+
 
 const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -109,9 +111,11 @@ const Calendar: React.FC = () => {
   
     return (
       <Link key={i} href={`/date/${formattedDate}`} passHref>
-        <DayCircle as="button" type="button" isToday={isToday} bg={bg}>
-          {currentDate.date()}
-        </DayCircle>
+        <button type="button" style={{ all: 'unset' }}>
+          <DayCircle istoday={isToday} bg={bg}>
+            {currentDate.date()}
+          </DayCircle>
+        </button>
       </Link>
     );
   });
