@@ -1,16 +1,10 @@
 /**
  * Calendar Component
  * Author: Yat Long (Louis) Szeto
- * 
+ *
  * Description:
- * A dynamic and interactive calendar component for the CS391 Final Project.
- * This component displays a real monthly calendar view aligned by weekdays (Monday to Sunday),
- * with support for navigating between months.
- * 
- * Usage:
- * This calendar is reused across the Home and Habit Tracker pages. It is designed
- * to support integration with data (e.g., habits, notes) per date and may be extended
- * with additional logic for interactivity, form inputs, and dynamic indicators.
+ * A monthly calendar view that aligns dates by weekdays, supports month navigation,
+ * highlights the current day, and links each day to its detail page.
  */
 'use client';
 import React, { useState } from 'react';
@@ -18,14 +12,15 @@ import styled from 'styled-components';
 import dayjs, { Dayjs } from 'dayjs';
 import Link from 'next/link';
 
+// Colors for each weekday to visually distinguish days
 const rainbowColors = [
-  '#ffd6d6', // Red - Mon
-  '#fff1cb', // Orange - Tue
-  '#f9ffd6', // Yellow - Wed
-  '#d9f4dc', // Green - Thu
-  '#cbe7f8', // Blue - Fri
-  '#e6d8ff', // Indigo - Sat
-  '#ffcde1', // Violet - Sun
+  '#ffb3b3', // Red - Mon
+  '#ffe599', // Orange - Tue
+  '#ffff99', // Yellow - Wed
+  '#b3ffcc', //  Green - Thu
+  '#b3e5ff', // Blue - Fri
+  '#dab3ff', // Indigo - Sat
+  '#ffb3e6', // Violet - Sun
 ];
 
 const Wrapper = styled.div`
@@ -67,23 +62,20 @@ const DayHeader = styled.div`
 `;
 
 const DayCircle = styled(({ istoday, ...props }) => <div {...props} />)<{ bg: string; istoday?: boolean }>`
-  height: 70px;
-  width: 70px;
+  height: 60px;
+  width: 60px;
   border-radius: 50%;
-  background: ${({ istoday, bg }) => (istoday ? '#ffcf77' : bg)};
+  background: ${({ bg }) => bg};
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
   margin: 0 auto;
   transition: background 0.3s ease, transform 0.25s, box-shadow 0.25s;
-  box-shadow: ${({ istoday }) =>
-    istoday ? '0 0 0 3px #ffb347, 0 0 10px rgba(255, 195, 0, 0.3)' : 'none'};
-
+  border: ${({ istoday }) => (istoday ? '3px solid #007acc' : 'none')};
   &:hover {
-    background: ${({ istoday, bg }) => (istoday ? '#f5b942' : '#d6e4ff')};
+    background: ${({ bg }) => bg + '99'}; /* Simple transparency-based lighten */
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
   }
 `;
@@ -92,10 +84,16 @@ const DayCircle = styled(({ istoday, ...props }) => <div {...props} />)<{ bg: st
 const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const Calendar: React.FC = () => {
+  // Get today's date
   const today = dayjs();
+
+  // Track the first day of the selected month
   const [month, setMonth] = useState<Dayjs>(today.startOf('month'));
 
+  // Offset to align the first day of the month with the correct weekday
   const startDay = (month.day() + 6) % 7;
+
+  // Total number of days in the selected month
   const daysInMonth = month.daysInMonth();
 
   const goPrevMonth = () => setMonth(month.subtract(1, 'month'));
@@ -103,11 +101,12 @@ const Calendar: React.FC = () => {
 
   const blanks = Array.from({ length: startDay }, (_, i) => <div key={`blank-${i}`} />);
   const days = Array.from({ length: daysInMonth }, (_, i) => {
-  const currentDate = month.add(i, 'day');
-  const isToday = currentDate.isSame(today, 'day');
-  const weekdayIndex = (currentDate.day() + 6) % 7; // 0 = Monday
-  const bg = rainbowColors[weekdayIndex];
-  const formattedDate = currentDate.format('YYYY-MM-DD');
+    // Render each day in the month as a colored, clickable circle
+    const currentDate = month.add(i, 'day');
+    const isToday = currentDate.isSame(today, 'day');
+    const weekdayIndex = (currentDate.day() + 6) % 7; // 0 = Monday
+    const bg = rainbowColors[weekdayIndex];
+    const formattedDate = currentDate.format('YYYY-MM-DD');
   
     return (
       <Link key={i} href={`/date/${formattedDate}`} passHref>
@@ -121,6 +120,7 @@ const Calendar: React.FC = () => {
   });
 
   return ( 
+    // Calendar navigation and grid layout
     <Wrapper>
       <Header>
         <NavButton onClick={goPrevMonth}>← Prev</NavButton>
