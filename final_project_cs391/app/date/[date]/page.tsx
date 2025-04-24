@@ -1,3 +1,6 @@
+// Author: Yat Long (Louis) Szeto
+// Description: This page displays a specific day's content in the personal planner app,
+// including a quote of the day fetched from an API and placeholders for notes, habits, or events.
 "use client";
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';

@@ -1,3 +1,6 @@
+// Author: Yat Long (Louis) Szeto
+// Description: API route for retrieving a random quote using the DummyJSON quote API.
+// This route fetches a quote and returns it in a simplified format with keys `q` (quote) and `a` (author).
 import { NextResponse } from 'next/server';
 
 export async function GET() {
