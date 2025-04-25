@@ -83,7 +83,7 @@ const DayCircle = styled(({ istoday, ...props }) => <div {...props} />)<{ bg: st
 
 const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-const Calendar: React.FC = () => {
+function Calendar() {
   // Get today's date
   const today = dayjs();
 
@@ -91,7 +91,7 @@ const Calendar: React.FC = () => {
   const [month, setMonth] = useState<Dayjs>(today.startOf('month'));
 
   // Offset to align the first day of the month with the correct weekday
-  const startDay = (month.day() + 6) % 7;
+  const startDay = (month.day()+6) % 7;
 
   // Total number of days in the selected month
   const daysInMonth = month.daysInMonth();
@@ -110,7 +110,7 @@ const Calendar: React.FC = () => {
   
     return (
       <Link key={i} href={`/date/${formattedDate}`} passHref>
-        <button type="button" style={{ all: 'unset' }}>
+        <button type="button">
           <DayCircle istoday={isToday} bg={bg}>
             {currentDate.date()}
           </DayCircle>

@@ -4,6 +4,7 @@
 "use client";
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
 
 export default function DatePage() {
   const params = useParams();
@@ -26,11 +27,12 @@ export default function DatePage() {
 
   return (
     <div style={{ padding: '2rem' }}>
+    <h1 style= {{fontSize: '1.5rem'}}>{dayjs(date as string).format('dddd, MMMM D, YYYY')}</h1>
       {quote && (
         <>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a1a1a' }}>
+          <h1 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a1a1a' }}>
             Quote of the Day
-          </h2>
+          </h1>
           <p style={{ fontStyle: 'italic', marginBottom: '0.25rem' }}>
             “{quote}”
           </p>
@@ -39,7 +41,6 @@ export default function DatePage() {
           </p>
         </>
       )}
-      <h1>Details for {date}</h1>
       {/* Insert notes, habits, events, etc. here */}
     </div>
   );
