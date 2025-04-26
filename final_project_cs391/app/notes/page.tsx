@@ -8,8 +8,8 @@ const noteProps = {
 
 export default function NotesPage() {
   return (
-    <>
+    <div className={`my-5 mx-2 w-1/2`}>
       <Notes props={noteProps} />
-    </>
+    </div>
   );
 }

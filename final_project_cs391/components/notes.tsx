@@ -13,11 +13,12 @@ import {useState} from "react";
 import {NoteType, NumNotes} from "@/types";
 
 // TextDisplay component takes text input and returns it in a paragraph tag
-function TextDisplay({text}:{text:string}) {
+function TextDisplay({props}:{props:NoteType}) {
     return(
-        <p className={`my-5 mx-2`}>
-            {text}
-        </p>
+        <div className={`flex flex-row`}>
+            <p className={`my-5 mx-2 flex-1/2`}>{props.note}</p>
+            <p className={`my-5 mx-2 text-green-700 italic`}>{props.date ? props.date : ""}</p>
+        </div>
     )
 }
 
@@ -31,28 +32,37 @@ export default function Notes({props}:{props:NumNotes}) {
     // enters it into the notes array, which will be mapped over to display all notes
     function handleSubmit(formData: FormData) {
         const newNoteText = formData.get("note") as string;
+        const newNoteDate = formData.get("date") as string;
         const newNote:NoteType = {
             id: id,
             note: newNoteText,
+            date: newNoteDate,
         }
         if (props.max && id < props.max) {
             setId((prevNum) => prevNum + 1);
             setNotes((currentNotes) => [...currentNotes, newNote]);
             console.log("id:", id);
             console.log("notes:", notes);
+            console.log("date:", newNoteDate);
+            console.log("today:", new Date(newNoteDate));
         }
     }
 
-    // Note-adding component: Form with text-input and submit burron
+    // Note-adding component: Form with text-input and submit button
     function DefaultNote() {
+
         return(
             <form action={handleSubmit} className={`flex flex-row`}>
                 <input
                     type="text" id={"note"}
                     name={"note"}
                     placeholder={`Add a note...`}
-                    onChange={()=>{}}
                     className={`p-2 text-md w-80 flex-2/3`}
+                    required={true}  // can enter a note without a date, cannot enter a note without text
+                />
+                <input
+                    type="date" id={"date"}
+                    name={"date"}
                 />
                 <input
                     type="submit"
@@ -62,7 +72,6 @@ export default function Notes({props}:{props:NumNotes}) {
                     text-gray-900
                     bg-green-300 border-2
                     border-green-800 
-                    
                 `}
                 />
             </form>
@@ -79,7 +88,7 @@ export default function Notes({props}:{props:NumNotes}) {
                 // If max notes was set, only that many notes are displayed
                 notes.map((note:NoteType) => (
                     <div key={note.id}>
-                        <TextDisplay text={note.note} />
+                        <TextDisplay props={note} />
                         <hr className={`opacity-30`}/>
                     </div>
                 ))

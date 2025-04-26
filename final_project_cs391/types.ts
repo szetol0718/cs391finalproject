@@ -1,6 +1,7 @@
 export type NoteType = {
     note: string,
     id: number,
+    date?: string,
 }
 
 export type NumNotes = {
