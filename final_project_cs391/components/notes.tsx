@@ -80,7 +80,26 @@ export default function Notes({props}:{props:NumNotes}) {
         } catch (error) {
          console.error('Error saving note:', error);
         }
-}
+}   
+    async function handleDelete(noteId: string) {
+        try {
+        const res = await fetch('/api/notes', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: noteId }),
+      });
+  
+      if (!res.ok) throw new Error('Failed to delete note');
+  
+      // After deleting, refetch notes
+      const updated = await fetch('/api/notes');
+      const updatedData = await updated.json();
+      setNotes(updatedData);
+      setId(updatedData.length); // update id counter too
+    } catch (error) {
+      console.error('Error deleting note:', error);
+    }
+  }
 
     // Note-adding component: Form with text-input and submit button
     function DefaultNote() {
@@ -121,10 +140,18 @@ export default function Notes({props}:{props:NumNotes}) {
                 // If there was no declared max, all notes are displayed
                 // If max notes was set, only that many notes are displayed
                 (props.max ? notes.slice(0, props.max) : notes).map((note: NoteType) => (
-                    <div key={note._id ?? note.id}>
-                        <TextDisplay props={note} />
-                        <hr className={`opacity-30`} />
+                    <div key={note._id ?? note.id} className="flex flex-row items-center justify-between bg-gray-50 p-3 my-2 rounded-lg shadow">
+                    <div>
+                      <p className="text-md">{note.note}</p>
+                      <p className="text-sm text-green-700 italic">{note.date}</p>
                     </div>
+                    <button
+                      onClick={() => handleDelete((note as any)._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 ))
             }
             {warning && (

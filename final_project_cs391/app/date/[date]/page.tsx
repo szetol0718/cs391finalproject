@@ -1,6 +1,6 @@
 // Author: Yat Long (Louis) Szeto
 // Description: This page displays a specific day's content in the personal planner app,
-// including a quote of the day fetched from an API and daily notes loaded from localStorage.
+// including a quote of the day fetched from an API and daily notes loaded from MongoDB.
 "use client";
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -76,8 +76,7 @@ export default function DatePage() {
               boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)'
             }}
           >
-            <p style={{ margin: 0 }}>{note.note}</p>
-          </div>
+    </div>
         ))
       ) : (
         <p key="no-notes" style={{ marginTop: '1rem', color: '#888', fontStyle: 'italic' }}>

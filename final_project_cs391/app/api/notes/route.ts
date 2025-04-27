@@ -6,7 +6,7 @@
 // MongoDB database: 'final-project'
 // MongoDB collection: 'archive-collection'
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
 const uri = process.env.MONGO_URI!; 
 const client = new MongoClient(uri);
@@ -45,3 +45,23 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json(result);
 }
+
+export async function DELETE(req: NextRequest) {
+    const { id } = await req.json(); // get MongoDB _id from request
+  
+    if (!id) {
+      return NextResponse.json({ error: 'Note ID required' }, { status: 400 });
+    }
+  
+    try {
+      await client.connect();
+      const db = client.db('final-project');
+      const collection = db.collection('archive-collection');
+      
+      const result = await collection.deleteOne({ _id: new ObjectId(id) });
+      return NextResponse.json(result);
+    } catch (error) {
+      console.error('DELETE error:', error);
+      return NextResponse.json({ error: 'Database delete failed' }, { status: 500 });
+    }
+  }

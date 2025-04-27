@@ -7,6 +7,7 @@ if (!MONGO_URI) {
 const db_name = "final-project";
 export const HABIT_COLLECTION = "habit-collection";  // habit collection
 export const ARCHIVE_COLLECTION = "archive-collection";  // archive collection
+export const NOTES_COLLECTION = "notes-collection"; 
 
 let client: MongoClient | null = null;
 let db: Db | null = null;
