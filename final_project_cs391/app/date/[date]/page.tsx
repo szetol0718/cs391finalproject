@@ -1,12 +1,14 @@
 // Author: Yat Long (Louis) Szeto
 // Description: This page displays a specific day's content in the personal planner app,
 // including a quote of the day fetched from an API and daily notes loaded from MongoDB.
+
 "use client";
+
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 
-// Define NoteType
+// Type for notes
 type NoteType = {
   id: number;
   note: string;
@@ -47,7 +49,9 @@ export default function DatePage() {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h1 style={{ fontSize: '1.5rem' }}>{dayjs(date as string).format('dddd, MMMM D, YYYY')}</h1>
+      <h1 style={{ fontSize: '1.5rem' }}>
+        {dayjs(date as string).format('dddd, MMMM D, YYYY')}
+      </h1>
 
       {quote && (
         <>
@@ -64,6 +68,7 @@ export default function DatePage() {
       )}
 
       <h2>Notes for {dayjs(date as string).format('MMMM D, YYYY')}</h2>
+
       {dayNotes.length > 0 ? (
         dayNotes.map((note, index) => (
           <div
@@ -76,10 +81,12 @@ export default function DatePage() {
               boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)'
             }}
           >
-    </div>
+            <p style={{ margin: 0 }}>{note.note}</p>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#666' }}>{note.date}</p>
+          </div>
         ))
       ) : (
-        <p key="no-notes" style={{ marginTop: '1rem', color: '#888', fontStyle: 'italic' }}>
+        <p style={{ marginTop: '1rem', color: '#888', fontStyle: 'italic' }}>
           No notes added yet for this day.
         </p>
       )}
