@@ -9,7 +9,7 @@
 // (b) Render a new blank default note
 
 "use client"
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {NoteType, NumNotes} from "@/types";
 
 // TextDisplay component takes text input and returns it in a paragraph tag
@@ -27,26 +27,60 @@ export default function Notes({props}:{props:NumNotes}) {
 
     const [notes, setNotes] = useState<NoteType[]>([]);
     const [id, setId] = useState(0);
+    const [warning, setWarning] = useState('');
+
+  // Fetch all notes from MongoDB on load
+  useEffect(() => {
+    async function fetchNotes() {
+      try {
+        const res = await fetch('/api/notes');
+        const data = await res.json();
+        setNotes(data);
+        setId(data.length); // set the current id counter
+      } catch (error) {
+        console.error('Failed to fetch notes:', error);
+      }
+    }
+    fetchNotes();
+  }, []);
 
     // Function to run on formSubmit. Takes text-input, creates unique NoteType object,
     // enters it into the notes array, which will be mapped over to display all notes
-    function handleSubmit(formData: FormData) {
+    async function handleSubmit(formData: FormData) {
         const newNoteText = formData.get("note") as string;
         const newNoteDate = formData.get("date") as string;
-        const newNote:NoteType = {
-            id: id,
+        
+        if (!newNoteText || !newNoteDate) {
+            setWarning('Both note text and date are required.');
+            return;
+        }
+        
+        setWarning(''); // Clear warning if everything is valid
+
+        const newNote = {
             note: newNoteText,
             date: newNoteDate,
+        };
+
+        try {
+            const res = await fetch('/api/notes', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(newNote),
+         });
+
+         if (!res.ok) throw new Error('Failed to save note');
+
+         const updatedRes = await fetch('/api/notes');
+         const updatedData = await updatedRes.json();
+         setNotes(updatedData);
+         setId(updatedData.length);
+
+         console.log('Note saved to MongoDB!');
+        } catch (error) {
+         console.error('Error saving note:', error);
         }
-        if (props.max && id < props.max) {
-            setId((prevNum) => prevNum + 1);
-            setNotes((currentNotes) => [...currentNotes, newNote]);
-            console.log("id:", id);
-            console.log("notes:", notes);
-            console.log("date:", newNoteDate);
-            console.log("today:", new Date(newNoteDate));
-        }
-    }
+}
 
     // Note-adding component: Form with text-input and submit button
     function DefaultNote() {
@@ -86,13 +120,16 @@ export default function Notes({props}:{props:NumNotes}) {
             {
                 // If there was no declared max, all notes are displayed
                 // If max notes was set, only that many notes are displayed
-                notes.map((note:NoteType) => (
-                    <div key={note.id}>
+                (props.max ? notes.slice(0, props.max) : notes).map((note: NoteType) => (
+                    <div key={note._id ?? note.id}>
                         <TextDisplay props={note} />
-                        <hr className={`opacity-30`}/>
+                        <hr className={`opacity-30`} />
                     </div>
                 ))
             }
+            {warning && (
+              <p className="text-red-600 mb-2">{warning}</p>
+            )}
             <DefaultNote/>  {/* Default, ie form where notes are added from */}
             <hr className={`opacity-30`}/>
 
