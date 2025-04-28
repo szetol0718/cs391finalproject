@@ -11,7 +11,7 @@ export default function HabitTrackerHeader() {
 
     return (
         <header className={headerStyle}>
-            <nav className="flex flex-wrap ">
+            <nav className="flex flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2">
                 <Link href ="/" className = {linkStyling}> Home </Link>
                 <Link href="/habit-tracker" className={linkStyling}>
                     Habit Tracker
