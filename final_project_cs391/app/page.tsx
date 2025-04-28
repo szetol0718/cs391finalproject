@@ -7,7 +7,7 @@ import Calendar from "@/components/Calendar";
 import TodoList from "@/components/todo"; 
 
 const noteProps = {
-    max:3, // comment out max prop to show all notes, or adjust number for more notes
+    max:5, // comment out max prop to show all notes, or adjust number for more notes
 }
 
 export default function Home() {
