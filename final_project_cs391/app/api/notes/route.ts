@@ -1,24 +1,21 @@
 // Author: Yat Long (Louis) Szeto
-// Description: API route for handling notes storage and retrieval using MongoDB.
-// - GET: Retrieves notes for a specific date if provided, or all notes otherwise.
-// - POST: Adds a new note with associated text and date.
-// - DELETE: Deletes a note based on its unique MongoDB ObjectId.
+// Description: API route for handling notes operations (GET, POST, DELETE).
 
 import { NextRequest, NextResponse } from 'next/server';
 import getCollection, { NOTE_COLLECTION } from '@/db';
 import { ObjectId } from 'mongodb';
 
-// GET: Retrieve notes
+// GET /api/notes
+// Fetch all notes or notes for a specific date
 export async function GET(req: NextRequest) {
   const date = req.nextUrl.searchParams.get('date');
 
   try {
     const collection = await getCollection(NOTE_COLLECTION);
-
+    // Query notes based on date or fetch all
     const notes = date
       ? await collection.find({ date }).toArray()
       : await collection.find({}).toArray();
-
     return NextResponse.json(notes);
   } catch (error) {
     console.error('GET error:', error);
@@ -26,18 +23,21 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST: Add a new note
+// POST /api/notes
+// Add a new note
 export async function POST(req: NextRequest) {
   const { note, date } = await req.json();
 
+  // Validate request body
   if (!note || !date) {
     return NextResponse.json({ error: 'Note and date are required' }, { status: 400 });
   }
 
   try {
     const collection = await getCollection(NOTE_COLLECTION);
-
+    // Insert new note document
     const result = await collection.insertOne({ note, date });
+
     return NextResponse.json(result);
   } catch (error) {
     console.error('POST error:', error);
@@ -45,17 +45,18 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE: Remove a note
+// DELETE /api/notes
+// Delete a note by ID
 export async function DELETE(req: NextRequest) {
   const { id } = await req.json();
-
+  // Validate ID
   if (!id) {
     return NextResponse.json({ error: 'Note ID is required' }, { status: 400 });
   }
 
   try {
     const collection = await getCollection(NOTE_COLLECTION);
-
+    // Delete note with matching _id
     const result = await collection.deleteOne({ _id: new ObjectId(id) });
     return NextResponse.json(result);
   } catch (error) {

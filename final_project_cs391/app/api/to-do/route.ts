@@ -1,21 +1,19 @@
 // Author: Yat Long (Louis) Szeto
 // Description: API route for handling to-do list operations using MongoDB.
-// - GET: Retrieves all tasks.
-// - POST: Adds a new task with optional due date.
-// - PATCH: Updates a task's completion status.
-// - DELETE: Deletes a task by ID.
-
+//GET,POST,PATCH,DELETE
 import { NextRequest, NextResponse } from 'next/server';
 import getCollection, { TODO_COLLECTION } from '@/db';
 import { ObjectId } from 'mongodb';
 
-// GET: Retrieve all tasks
+// --- GET /api/to-do ---
+// Fetch all tasks or tasks for a specific due date
 export async function GET(req: NextRequest) {
   const date = req.nextUrl.searchParams.get('date');
 
   try {
     const collection = await getCollection(TODO_COLLECTION);
 
+    // Query tasks based on due date or fetch all
     const tasks = date
       ? await collection.find({ dueDate: date }).toArray()
       : await collection.find({}).toArray();
@@ -27,10 +25,12 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST: Add a new task
+// --- POST /api/to-do ---
+// Add a new task
 export async function POST(req: NextRequest) {
   const { text, dueDate } = await req.json();
 
+  // Validate task text
   if (!text) {
     return NextResponse.json({ error: 'Task text is required' }, { status: 400 });
   }
@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
   try {
     const collection = await getCollection(TODO_COLLECTION);
 
+    // Insert new task document
     const newTask = {
       text,
       dueDate: dueDate || null,
@@ -52,10 +53,12 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PATCH: Toggle task completion
+// --- PATCH /api/to-do ---
+// Toggle task completion
 export async function PATCH(req: NextRequest) {
   const { id, completed } = await req.json();
 
+  // Validate ID and completed status
   if (!id || typeof completed !== 'boolean') {
     return NextResponse.json({ error: 'Task ID and completed status are required' }, { status: 400 });
   }
@@ -63,6 +66,7 @@ export async function PATCH(req: NextRequest) {
   try {
     const collection = await getCollection(TODO_COLLECTION);
 
+    // Update task's completed status
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
       { $set: { completed } }
@@ -75,10 +79,12 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// DELETE: Remove a task by ID
+// --- DELETE /api/to-do ---
+// Delete a task by ID
 export async function DELETE(req: NextRequest) {
   const { id } = await req.json();
 
+  // Validate ID
   if (!id) {
     return NextResponse.json({ error: 'Task ID is required' }, { status: 400 });
   }
@@ -86,7 +92,9 @@ export async function DELETE(req: NextRequest) {
   try {
     const collection = await getCollection(TODO_COLLECTION);
 
+    // Delete task with matching _id
     const result = await collection.deleteOne({ _id: new ObjectId(id) });
+
     return NextResponse.json(result);
   } catch (error) {
     console.error('DELETE error:', error);

@@ -13,7 +13,7 @@ export default function Notes({ props }: { props: NumNotes }) {
     const [id, setId] = useState(0);
     const [warning, setWarning] = useState('');
 
-    // Fetch all notes from MongoDB on load
+    // --- Fetch all notes from MongoDB when component mounts ---
     useEffect(() => {
         async function fetchNotes() {
             try {
@@ -28,7 +28,7 @@ export default function Notes({ props }: { props: NumNotes }) {
         fetchNotes();
     }, []);
 
-    // Handle note submission
+    // --- Handle adding a new note ---
     async function handleSubmit(formData: FormData) {
         const newNoteText = formData.get("note") as string;
         const newNoteDate = formData.get("date") as string;
@@ -50,6 +50,7 @@ export default function Notes({ props }: { props: NumNotes }) {
 
             if (!res.ok) throw new Error('Failed to save note');
 
+            // Refresh notes after adding
             const updatedRes = await fetch('/api/notes');
             const updatedData = await updatedRes.json();
             setNotes(updatedData);
@@ -61,7 +62,7 @@ export default function Notes({ props }: { props: NumNotes }) {
         }
     }
 
-    // Handle note deletion
+    // --- Handle deleting a note ---
     async function handleDelete(noteId: string) {
         try {
             const res = await fetch('/api/notes', {
@@ -72,6 +73,7 @@ export default function Notes({ props }: { props: NumNotes }) {
 
             if (!res.ok) throw new Error('Failed to delete note');
 
+            // Refresh notes after deleting
             const updated = await fetch('/api/notes');
             const updatedData = await updated.json();
             setNotes(updatedData);
@@ -83,10 +85,12 @@ export default function Notes({ props }: { props: NumNotes }) {
 
     return (
         <div className="text-wrap">
+            {/* Heading */}
             <h2 className="underline underline-offset-3 font-semibold text-lg text-justify">
                 Leave Yourself Some Notes!
             </h2>
 
+            {/* Display all notes */}
             {(props.max ? notes.slice(0, props.max) : notes).map((note: NoteType) => (
                 <div key={note._id ?? note.id} className="flex flex-row items-center justify-between bg-gray-50 p-3 my-2 rounded-lg shadow">
                     <div>
@@ -102,14 +106,17 @@ export default function Notes({ props }: { props: NumNotes }) {
                 </div>
             ))}
 
+            {/* Warning message if missing inputs */}
             {warning && (
                 <p className="text-red-600 mb-2">{warning}</p>
             )}
 
+            {/* Note-adding form */}
             <DefaultNote handleSubmit={handleSubmit} />
 
             <hr className="opacity-30" />
 
+            {/* Message if reaching maximum notes */}
             {props.max ? (
                 id >= props.max ? (
                     <p className="my-5 text-red-700">Maximum number of notes displayed</p>
@@ -121,7 +128,7 @@ export default function Notes({ props }: { props: NumNotes }) {
     );
 }
 
-// Subcomponent: Note adding form
+// --- Subcomponent: Form for adding new notes ---
 function DefaultNote({ handleSubmit }: { handleSubmit: (formData: FormData) => Promise<void> }) {
     return (
         <form action={handleSubmit} className="flex flex-row">

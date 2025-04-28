@@ -13,12 +13,14 @@
 import React, { useState, useEffect } from 'react';
 import { Task } from '@/types';
 
+// Fetch all tasks from the server
 async function fetchTasksFromServer() {
   const res = await fetch('/api/to-do');
   const data = await res.json();
   return data;
 }
 
+// Post a new task to the server
 async function postTaskToServer(task: { text: string; dueDate?: string }) {
   const res = await fetch('/api/to-do', {
     method: 'POST',
@@ -28,6 +30,7 @@ async function postTaskToServer(task: { text: string; dueDate?: string }) {
   if (!res.ok) throw new Error('Failed to save task');
 }
 
+// Toggle a task's completion status on the server
 async function toggleTaskCompletionOnServer(id: string, completed: boolean) {
   const res = await fetch('/api/to-do', {
     method: 'PATCH',
@@ -37,6 +40,7 @@ async function toggleTaskCompletionOnServer(id: string, completed: boolean) {
   if (!res.ok) throw new Error('Failed to update task');
 }
 
+// Delete a task from the server
 async function deleteTaskFromServer(id: string) {
   const res = await fetch('/api/to-do', {
     method: 'DELETE',
@@ -47,10 +51,12 @@ async function deleteTaskFromServer(id: string) {
 }
 
 export default function TodoList() {
+  // --- States for managing tasks and input fields ---
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskText, setNewTaskText] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
 
+  // --- Load tasks when component mounts ---
   useEffect(() => {
     async function loadTasks() {
       try {
@@ -63,6 +69,7 @@ export default function TodoList() {
     loadTasks();
   }, []);
 
+  // --- Add a new task ---
   const addTask = async () => {
     if (newTaskText.trim() === '') return;
     try {
@@ -76,6 +83,7 @@ export default function TodoList() {
     }
   };
 
+  // --- Toggle completion status of a task ---
   const toggleComplete = async (id: string, currentStatus: boolean) => {
     try {
       await toggleTaskCompletionOnServer(id, !currentStatus);
@@ -86,6 +94,7 @@ export default function TodoList() {
     }
   };
 
+  // --- Delete a task ---
   const handleDelete = async (id: string) => {
     try {
       await deleteTaskFromServer(id);
@@ -96,6 +105,7 @@ export default function TodoList() {
     }
   };
 
+  // --- Sort tasks by due date ---
   const sortedTasks = [...tasks].sort((a, b) => {
     if (!a.dueDate && !b.dueDate) return 0;
     if (!a.dueDate) return -1;
@@ -105,7 +115,10 @@ export default function TodoList() {
 
   return (
     <div className="p-4 max-w-md mx-auto">
+      {/* Title */}
       <h1 className="text-2xl font-bold mb-4">Todo List</h1>
+
+      {/* Form for adding new task */}
       <div className="flex flex-col gap-2 mb-4">
         <input
           type="text"
@@ -124,6 +137,8 @@ export default function TodoList() {
           Add Task
         </button>
       </div>
+
+      {/* Task list */}
       <ul className="space-y-2">
         {sortedTasks.map((task) => (
           <li key={task._id} className="border p-2 rounded flex items-center gap-2">

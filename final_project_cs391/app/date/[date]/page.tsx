@@ -1,13 +1,13 @@
 // Author: Yat Long (Louis) Szeto
 // Description: This page displays a specific day's content in the personal planner app,
-// including a quote of the day fetched from an API and daily notes loaded from MongoDB.
+// including a quote of the day fetched from an API and daily notes and tasks loaded from MongoDB.
 
 "use client";
 
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-import { Task,NoteType } from '@/types';
+import { Task, NoteType } from '@/types';
 
 export default function DatePage() {
   const params = useParams();
@@ -18,6 +18,7 @@ export default function DatePage() {
   const [dayNotes, setDayNotes] = useState<NoteType[]>([]);
   const [dayTodos, setDayTodos] = useState<Task[]>([]);
 
+  // Fetch quote of the day
   useEffect(() => {
     fetch('/api/quote')
       .then(res => res.json())
@@ -30,6 +31,7 @@ export default function DatePage() {
       });
   }, []);
 
+  // Fetch notes for the selected date
   useEffect(() => {
     if (!date) return;
     fetch(`/api/notes?date=${date}`)
@@ -42,6 +44,7 @@ export default function DatePage() {
       });
   }, [date]);
 
+  // Fetch todos for the selected date
   useEffect(() => {
     if (!date) return;
     fetch(`/api/to-do?date=${date}`)
@@ -54,6 +57,7 @@ export default function DatePage() {
       });
   }, [date]);
 
+  // Toggle task completion status
   async function toggleComplete(id: string, currentStatus: boolean) {
     try {
       const res = await fetch('/api/to-do', {
@@ -62,8 +66,8 @@ export default function DatePage() {
         body: JSON.stringify({ id, completed: !currentStatus }),
       });
       if (!res.ok) throw new Error('Failed to toggle task');
-  
-      // After toggling, refetch updated todos filtered by date
+
+      // After toggling, refetch updated todos for the date
       if (date) {
         const refreshed = await fetch(`/api/to-do?date=${date}`).then(res => res.json());
         setDayTodos(refreshed);
@@ -72,10 +76,13 @@ export default function DatePage() {
       console.error('Failed to toggle todo completion:', error);
     }
   }
+
   return (
     <div style={{ padding: '2rem' }}>
+      {/* Display selected date */}
       <h1 style={{ fontSize: '1.5rem' }}>{dayjs(date as string).format('dddd, MMMM D, YYYY')}</h1>
 
+      {/* Display quote of the day */}
       {quote && (
         <>
           <h1 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a1a1a' }}>
@@ -90,6 +97,7 @@ export default function DatePage() {
         </>
       )}
 
+      {/* Display notes section */}
       <h2>Notes for {dayjs(date as string).format('MMMM D, YYYY')}</h2>
 
       {dayNotes.length > 0 ? (
@@ -114,6 +122,7 @@ export default function DatePage() {
         </p>
       )}
 
+      {/* Display todo list section */}
       <h2 className="mt-6">Todo List for {dayjs(date as string).format('MMMM D, YYYY')}</h2>
 
       {dayTodos.length > 0 ? (
