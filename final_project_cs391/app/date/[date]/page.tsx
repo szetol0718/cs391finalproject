@@ -9,8 +9,8 @@ import dayjs from 'dayjs';
 import getQuote from '@/lib/GetQuote';
 import { getAllToDos, toggleComplete } from '@/lib/updateToDos';
 import { Task } from '@/types';
-import getAllNotes from '@/lib/getAllNotes';
-import { NoteType } from '@/types';
+import getAllMoods from '@/lib/updateMoods';
+import { saveMood } from '@/lib/updateMoods';
 
 export default function DatePage() {
   const params = useParams();
@@ -19,7 +19,7 @@ export default function DatePage() {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('');
   const [todos, setTodos] = useState<Task[]>([]);
-  const [notes, setNotes] = useState<NoteType[]>([]);
+  const [mood, setMood] = useState<string | null>(null);
 
   // Fetch the quote when the page loads
   useEffect(() => {
@@ -50,17 +50,29 @@ export default function DatePage() {
   }, [date]);
 
   useEffect(() => {
-    async function fetchNotes() {
+    async function fetchMoods() {
       try {
-        const allNotes = await getAllNotes();
-        const filteredNotes = allNotes.filter((note) => note.date === date);
-        setNotes(filteredNotes);
+        const moods = await getAllMoods();
+        const todayMood = moods.find((m) => m.date === date);
+        if (todayMood) {
+          setMood(todayMood.mood);
+        }
       } catch (err) {
-        console.error('Failed to fetch notes:', err);
+        console.error('Failed to fetch moods:', err);
       }
     }
-    fetchNotes();
+    fetchMoods();
   }, [date]);
+
+  async function handleMoodSelect(selectedMood: string) {
+    setMood(selectedMood);
+
+    try {
+      await saveMood({ date, mood: selectedMood });
+    } catch (error) {
+      console.error('Failed to save mood:', error);
+    }
+  }
 
   // Handle toggling completion of a task
   async function handleToggle(id: number, currentStatus: boolean) {
@@ -97,21 +109,26 @@ export default function DatePage() {
         </>
       )}
 
-      {/* Display Notes */}
-      <h2 className="text-xl font-semibold mt-8 mb-4">Notes</h2>
-      {notes.length > 0 ? (
-        <ul className="space-y-2">
-          {notes.map((note) => (
-            <li key={note.id} className="flex items-center gap-3 p-2 bg-yellow-100 rounded shadow">
-                {note.note}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-500 italic">No notes for this day.</p>
+      {/* Mood Tracker */}
+      <h2 className="text-xl font-semibold mt-8 mb-4">Mood of the Day</h2>
+      <div className="flex space-x-4 text-4xl mb-4">
+        {["😄", "😐", "😢", "😡", "🥳", "🤯", "😔", "😎"].map((emoji) => (
+          <button
+            key={emoji}
+            onClick={() => handleMoodSelect(emoji)}
+            className="hover:scale-110 transition-transform"
+          >
+            {emoji}
+          </button>
+        ))}
+      </div>
+      {mood && (
+        <p className="text-lg">
+          Your mood today: <span className="text-2xl">{mood}</span>
+        </p>
       )}
 
-      {/* Display Todos */}
+      {/* Display To-dos */}
       <h2 className="text-xl font-semibold mt-8 mb-4">To-Do List</h2>
       {todos.length > 0 ? (
         <ul className="space-y-2">
