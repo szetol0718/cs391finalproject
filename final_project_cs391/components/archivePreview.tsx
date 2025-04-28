@@ -4,7 +4,7 @@ import { ArchiveProps } from "@/types";
 
 export default function ArchivePreview({ archive }: { archive: ArchiveProps }) {
     return (
-        <div className="bg-white rounded-lg p-4 m-3 w-[80%] mx-auto">
+        <div className="rounded-lg p-4 m-3 w-[80%] mx-auto">
             <h5 className="font-bold text-lg text-[#453750] mb-1">
                 Week: {new Date(archive.weekStart).toLocaleDateString()} -{" "}
                 {new Date(archive.weekEnd).toLocaleDateString()}
