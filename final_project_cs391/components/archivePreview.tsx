@@ -10,11 +10,11 @@ export default function ArchivePreview({ archive }: { archive: ArchiveProps }) {
                 {new Date(archive.weekEnd).toLocaleDateString()}
             </h5>
 
-            <div className="flex flex-wrap gap-6 justify-center">
+            <div className="flex flex-wrap gap-6 justify-center text-center">
                 {archive.habits.map((habit) => (
                     <div key={habit.id} className="flex flex-col sm:w-[50%] md:w-[40%] lg:w-[20%] p-2 border rounded-lg">
                         <div className="w-full flex justify-between mb-2">
-                            <p className="font-semibold text-sm">{habit.habit}</p>
+                            <p className="font-semibold text-sm pb-2 gap-2">{habit.habit}</p>
                             <p className="font-semibold text-sm">{habit.weeklyCompleted}%</p>
                         </div>
                     </div>
