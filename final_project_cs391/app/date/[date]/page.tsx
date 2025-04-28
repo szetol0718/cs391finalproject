@@ -25,7 +25,7 @@ export default function DatePage() {
   useEffect(() => {
     async function fetchQuote() {
       try {
-        const quoteData = await getQuote();
+        const quoteData = await getQuote(date);
         setQuote(quoteData.q);
         setAuthor(quoteData.a);
       } catch (err) {
@@ -33,7 +33,7 @@ export default function DatePage() {
       }
     }
     fetchQuote();
-  }, []);
+  }, [date]);
 
   // Fetch todos when the page loads
   useEffect(() => {
@@ -103,9 +103,7 @@ export default function DatePage() {
         <ul className="space-y-2">
           {notes.map((note) => (
             <li key={note.id} className="flex items-center gap-3 p-2 bg-yellow-100 rounded shadow">
-              <div className="flex-1">
                 {note.note}
-              </div>
             </li>
           ))}
         </ul>
