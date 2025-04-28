@@ -15,6 +15,7 @@ export type NumNotes = {
 }
 
 //author: Arooj Kamran
+// props used for todo list
 export type Task = {
     id: number;
     text: string;
