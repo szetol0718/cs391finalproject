@@ -1,3 +1,6 @@
+//Authors: Leigh Brown and Yat Long (Louis) Szeto
+
+
 import {MongoClient, Db, Collection} from 'mongodb';
  
  const MONGO_URI = process.env.MONGO_URI as string;
@@ -5,8 +8,8 @@ import {MongoClient, Db, Collection} from 'mongodb';
      throw new Error("MONGO_URI environment variable is undefined")
  }
  const db_name = "final-project";
- export const HABIT_COLLECTION = "habit-collection";  // habit collection
- export const ARCHIVE_COLLECTION = "archive-collection";  // archive collection
+ export const HABIT_COLLECTION = "habit-collection";  // habit collection (Leigh)
+ export const ARCHIVE_COLLECTION = "archive-collection";  // archive collection (Leigh)
  export const NOTE_COLLECTION = "note-collection";
  export const TODO_COLLECTION = "todo-collection"; 
  
