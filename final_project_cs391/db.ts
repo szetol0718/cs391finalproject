@@ -1,29 +1,20 @@
-import {MongoClient, Db, Collection} from 'mongodb';
+// DELETE: Remove a task by ID
+export async function DELETE(req: NextRequest) {
+  const { id } = await req.json();
 
-const MONGO_URI = process.env.MONGO_URI as string;
-if (!MONGO_URI) {
-    throw new Error("MONGO_URI environment variable is undefined")
-}
-const db_name = "final-project";
-export const HABIT_COLLECTION = "habit-collection";  // habit collection
-export const ARCHIVE_COLLECTION = "archive-collection";  // archive collection
-export const NOTES_COLLECTION = "notes-collection"; 
+  if (!id) {
+    return NextResponse.json({ error: 'Task ID is required' }, { status: 400 });
+  }
 
-let client: MongoClient | null = null;
-let db: Db | null = null;
+  try {
+    await client.connect();
+    const db = client.db(dbName);
+    const collection = db.collection(collectionName);
 
-async function connect(): Promise<Db> {
-    if (!client) {
-        client = new MongoClient(MONGO_URI);
-        await client.connect();
-    }
-    return client.db(db_name)
-}
-
-export default async function getCollection(
-    collectionName: string, ): Promise<Collection> {
-    if (!db) {
-        db= await connect();
-    }
-    return db.collection(collectionName);
+    const result = await collection.deleteOne({ _id: new ObjectId(id) });
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('DELETE error:', error);
+    return NextResponse.json({ error: 'Failed to delete task' }, { status: 500 });
+  }
 }
