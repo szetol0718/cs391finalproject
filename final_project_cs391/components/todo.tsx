@@ -1,5 +1,5 @@
 // TODO COMPONENT
-// Author:  Arooj Kamran
+// Author: Arooj Kamran
 // Description: User can enter goals (weekly or monthly), set deadlines, and mark them as completed
 
 // The to-do list will contain 0+ posted goals and 1 "Default" (Add a Goal!) form.
@@ -10,102 +10,63 @@
 // Each goal can be marked completed via checkbox
 
 "use client";
-import React, { useState, useEffect } from 'react';
-import { Task } from '@/types';
-
-// Fetch all tasks from the server
-async function fetchTasksFromServer() {
-  const res = await fetch('/api/to-do');
-  const data = await res.json();
-  return data;
-}
-
-// Post a new task to the server
-async function postTaskToServer(task: { text: string; dueDate?: string }) {
-  const res = await fetch('/api/to-do', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task),
-  });
-  if (!res.ok) throw new Error('Failed to save task');
-}
-
-// Toggle a task's completion status on the server
-async function toggleTaskCompletionOnServer(id: string, completed: boolean) {
-  const res = await fetch('/api/to-do', {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, completed }),
-  });
-  if (!res.ok) throw new Error('Failed to update task');
-}
-
-// Delete a task from the server
-async function deleteTaskFromServer(id: string) {
-  const res = await fetch('/api/to-do', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id }),
-  });
-  if (!res.ok) throw new Error('Failed to delete task');
-}
+import React, { useEffect, useState } from 'react';
+import getCollection, {TODO_COLLECTION} from '@/db';
+import {Task} from "@/types";
+import getAllToDos from "@/lib/getAllToDos";
 
 export default function TodoList() {
-  // --- States for managing tasks and input fields ---
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskText, setNewTaskText] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
 
-  // --- Load tasks when component mounts ---
   useEffect(() => {
-    async function loadTasks() {
+    async function fetchTasks() {
       try {
-        const data = await fetchTasksFromServer();
-        setTasks(data);
+        const fetchedTasks = await getAllToDos();
+        setTasks(fetchedTasks);
       } catch (error) {
-        console.error('Failed to load tasks:', error);
+        console.error('Error fetching tasks:', error);
       }
     }
-    loadTasks();
-  }, []);
 
-  // --- Add a new task ---
+    fetchTasks();
+  }, [])
+
   const addTask = async () => {
     if (newTaskText.trim() === '') return;
+    const newTask: Task = {
+      id: Date.now(),
+      text: newTaskText,
+      dueDate: newTaskDueDate || undefined,
+      completed: false,
+    };
     try {
-      await postTaskToServer({ text: newTaskText, dueDate: newTaskDueDate || undefined });
-      const updatedTasks = await fetchTasksFromServer();
-      setTasks(updatedTasks);
+      const todoCollection = await getCollection(TODO_COLLECTION);
+      await todoCollection.insertOne(newTask); // Add to MongoDB
+      setTasks([...tasks, newTask]); // Update local state
       setNewTaskText('');
       setNewTaskDueDate('');
     } catch (error) {
-      console.error('Failed to add task:', error);
+      console.error('Failed to add task to database', error);
     }
   };
 
-  // --- Toggle completion status of a task ---
-  const toggleComplete = async (id: string, currentStatus: boolean) => {
+  const toggleComplete = async (id: number) => {
+    const updatedTasks = tasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+    );
+    setTasks(updatedTasks);
+
     try {
-      await toggleTaskCompletionOnServer(id, !currentStatus);
-      const updatedTasks = await fetchTasksFromServer();
-      setTasks(updatedTasks);
+      const collection = await getCollection(TODO_COLLECTION);
+      await collection.updateOne({ id: id }, { $set: { completed: updatedTasks.find(t => t.id === id)?.completed } });
     } catch (error) {
-      console.error('Failed to toggle task completion:', error);
+      console.error('Failed to update task:', error);
     }
   };
 
-  // --- Delete a task ---
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteTaskFromServer(id);
-      const updatedTasks = await fetchTasksFromServer();
-      setTasks(updatedTasks);
-    } catch (error) {
-      console.error('Failed to delete task:', error);
-    }
-  };
-
-  // --- Sort tasks by due date ---
+  // Sort tasks by due date
   const sortedTasks = [...tasks].sort((a, b) => {
     if (!a.dueDate && !b.dueDate) return 0;
     if (!a.dueDate) return -1;
@@ -114,54 +75,43 @@ export default function TodoList() {
   });
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      {/* Title */}
-      <h1 className="text-2xl font-bold mb-4">Todo List</h1>
-
-      {/* Form for adding new task */}
-      <div className="flex flex-col gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="New task"
-          value={newTaskText}
-          onChange={(e) => setNewTaskText(e.target.value)}
-          className="p-2 border rounded"
-        />
-        <input
-          type="date"
-          value={newTaskDueDate}
-          onChange={(e) => setNewTaskDueDate(e.target.value)}
-          className="p-2 border rounded"
-        />
-        <button onClick={addTask} className="bg-blue-500 text-white p-2 rounded">
-          Add Task
-        </button>
+      <div className="p-4 max-w-md mx-auto">
+        <h1 className="text-2xl font-bold mb-4">Todo List</h1>
+        <div className="flex flex-col gap-2 mb-4">
+          <input
+              type="text"
+              placeholder="New task"
+              value={newTaskText}
+              onChange={(e) => setNewTaskText(e.target.value)}
+              className="p-2 border rounded"
+          />
+          <input
+              type="date"
+              value={newTaskDueDate}
+              onChange={(e) => setNewTaskDueDate(e.target.value)}
+              className="p-2 border rounded"
+          />
+          <button onClick={addTask} className="bg-blue-500 text-white p-2 rounded">
+            Add Task
+          </button>
+        </div>
+        <ul className="space-y-2">
+          {sortedTasks.map((task) => (
+              <li key={task.id} className="border p-2 rounded flex items-center gap-2">
+                <input
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={() => toggleComplete(task.id)}
+                />
+                <div className={`flex-1 ${task.completed ? 'line-through text-gray-500' : ''}`}>
+                  <div className="font-semibold">{task.text}</div>
+                  {task.dueDate && (
+                      <div className="text-sm">{`Due: ${task.dueDate}`}</div>
+                  )}
+                </div>
+              </li>
+          ))}
+        </ul>
       </div>
-
-      {/* Task list */}
-      <ul className="space-y-2">
-        {sortedTasks.map((task) => (
-          <li key={task._id} className="border p-2 rounded flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() => toggleComplete(task._id, task.completed)}
-            />
-            <div className={`flex-1 ${task.completed ? 'line-through text-gray-500' : ''}`}>
-              <div className="font-semibold">{task.text}</div>
-              {task.dueDate && (
-                <div className="text-sm">{`Due: ${task.dueDate}`}</div>
-              )}
-            </div>
-            <button
-              onClick={() => handleDelete(task._id)}
-              className="bg-red-500 text-white text-xs px-2 py-0.5 rounded hover:bg-red-600"
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }
