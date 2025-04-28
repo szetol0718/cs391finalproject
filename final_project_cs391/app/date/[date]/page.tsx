@@ -11,7 +11,6 @@ import { getAllToDos, toggleComplete } from '@/lib/updateToDos';
 import { Task } from '@/types';
 import getAllMoods from '@/lib/updateMoods';
 import { saveMood } from '@/lib/updateMoods';
-import { MoodType } from '@/types';
 
 export default function DatePage() {
   const params = useParams();
@@ -21,7 +20,6 @@ export default function DatePage() {
   const [author, setAuthor] = useState('');
   const [todos, setTodos] = useState<Task[]>([]);
   const [mood, setMood] = useState<string | null>(null);
-  const [allMoods, setAllMoods] = useState<MoodType[]>([]);
 
   // Fetch the quote when the page loads
   useEffect(() => {
@@ -55,7 +53,6 @@ export default function DatePage() {
     async function fetchMoods() {
       try {
         const moods = await getAllMoods();
-        setAllMoods(moods);
         const todayMood = moods.find((m) => m.date === date);
         if (todayMood) {
           setMood(todayMood.mood);
@@ -115,7 +112,7 @@ export default function DatePage() {
       {/* Mood Tracker */}
       <h2 className="text-xl font-semibold mt-8 mb-4">Mood of the Day</h2>
       <div className="flex space-x-4 text-4xl mb-4">
-        {["😄", "😐", "😢", "😡", "🥳"].map((emoji) => (
+        {["😄", "😐", "😢", "😡", "🥳", "🤯", "😔", "😎"].map((emoji) => (
           <button
             key={emoji}
             onClick={() => handleMoodSelect(emoji)}
@@ -131,7 +128,7 @@ export default function DatePage() {
         </p>
       )}
 
-      {/* Display Todos */}
+      {/* Display To-dos */}
       <h2 className="text-xl font-semibold mt-8 mb-4">To-Do List</h2>
       {todos.length > 0 ? (
         <ul className="space-y-2">
