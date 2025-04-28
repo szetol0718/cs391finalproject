@@ -75,8 +75,6 @@ const DayCircle = styled.div<{ bg: string; $isToday?: boolean }>`
 
   &:hover {
     background: ${({ bg }) => bg + '99'}; /* Lighten color slightly on hover */
-    transform: scale(1.1); /* Slight zoom effect */
-    cursor: pointer;
   }
 `;
 

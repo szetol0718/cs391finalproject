@@ -14,7 +14,7 @@ export default function HabitTrackerPage() {
 
                 <div className="w-[90%] items-center justify-center mt-0 m-auto">
                     <h1 className="text-4xl font-bold p-2 text-center">Weekly Habit Tracker</h1>
-                    <p className="text-xl font-bold mb-4 p-6 text-center">
+                    <p className="text-xl font-bold mb-4 p-3 text-center">
                         Save Name and Note changes by pressing enter in the notes section
                     </p>
                     <HabitTrackerHeader />

@@ -14,6 +14,7 @@ export type NumNotes = {
     max?: number,
 }
 
+//author: Arooj Kamran
 export type Task = {
     _id: string;
     text: string;
