@@ -94,7 +94,7 @@ export default function Notes({ props }: { props: NumNotes }) {
                         <p className="text-sm text-green-700 italic">{note.date}</p>
                     </div>
                     <button
-                        onClick={() => handleDelete((note as any)._id)}
+                        onClick={() => note._id && handleDelete(note._id)}
                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                     >
                         Delete
@@ -117,16 +117,6 @@ export default function Notes({ props }: { props: NumNotes }) {
                     <p className="my-5 text-green-700">Notes remaining: {props.max - id}</p>
                 )
             ) : null}
-        </div>
-    );
-}
-
-// Subcomponent: Text display
-function TextDisplay({ props }: { props: NoteType }) {
-    return (
-        <div className="flex flex-row">
-            <p className="my-5 mx-2 flex-1/2">{props.note}</p>
-            <p className="my-5 mx-2 text-green-700 italic">{props.date ? props.date : ""}</p>
         </div>
     );
 }

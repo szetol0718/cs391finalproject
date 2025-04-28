@@ -44,17 +44,34 @@ export default function DatePage() {
 
   useEffect(() => {
     if (!date) return;
-    fetch('/api/to-do')
+    fetch(`/api/to-do?date=${date}`)
       .then(res => res.json())
       .then((data: Task[]) => {
-        const filtered = data.filter(task => task.dueDate === date);
-        setDayTodos(filtered);
+        setDayTodos(data);
       })
       .catch(err => {
         console.error('Failed to fetch todos from DB:', err);
       });
   }, [date]);
 
+  async function toggleComplete(id: string, currentStatus: boolean) {
+    try {
+      const res = await fetch('/api/to-do', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, completed: !currentStatus }),
+      });
+      if (!res.ok) throw new Error('Failed to toggle task');
+  
+      // After toggling, refetch updated todos filtered by date
+      if (date) {
+        const refreshed = await fetch(`/api/to-do?date=${date}`).then(res => res.json());
+        setDayTodos(refreshed);
+      }
+    } catch (error) {
+      console.error('Failed to toggle todo completion:', error);
+    }
+  }
   return (
     <div style={{ padding: '2rem' }}>
       <h1 style={{ fontSize: '1.5rem' }}>{dayjs(date as string).format('dddd, MMMM D, YYYY')}</h1>
@@ -100,25 +117,20 @@ export default function DatePage() {
       <h2 className="mt-6">Todo List for {dayjs(date as string).format('MMMM D, YYYY')}</h2>
 
       {dayTodos.length > 0 ? (
-        dayTodos.map((todo, index) => (
-          <div
-            key={todo._id ?? index}
-            style={{
-              backgroundColor: '#f0f9ff',
-              padding: '1rem',
-              marginBottom: '1rem',
-              borderRadius: '8px',
-              boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}
-          >
-            <input type="checkbox" checked={todo.completed} readOnly />
-            <div className={todo.completed ? 'line-through text-gray-500' : ''}>
-              <p style={{ margin: 0 }}>{todo.text}</p>
+        dayTodos.map((task) => (
+          <li key={task._id} className="border p-2 rounded flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={task.completed}
+              onChange={() => toggleComplete(task._id!, task.completed)}
+            />
+            <div className={`flex-1 ${task.completed ? 'line-through text-gray-500' : ''}`}>
+              <div className="font-semibold">{task.text}</div>
+              {task.dueDate && (
+                <div className="text-sm">{`Due: ${task.dueDate}`}</div>
+              )}
             </div>
-          </div>
+          </li>
         ))
       ) : (
         <p style={{ marginTop: '1rem', color: '#888', fontStyle: 'italic' }}>

@@ -61,7 +61,7 @@ const DayHeader = styled.div`
   padding: 0.5rem 0;
 `;
 
-const DayCircle = styled(({ istoday, ...props }) => <div {...props} />)<{ bg: string; istoday?: boolean }>`
+const DayCircle = styled.div<{ bg: string; $isToday?: boolean }>`
   height: 60px;
   width: 60px;
   border-radius: 50%;
@@ -72,7 +72,8 @@ const DayCircle = styled(({ istoday, ...props }) => <div {...props} />)<{ bg: st
   font-weight: 500;
   margin: 0 auto;
   transition: background 0.3s ease, transform 0.25s, box-shadow 0.25s;
-  border: ${({ istoday }) => (istoday ? '3px solid #007acc' : 'none')};
+  border: ${({ $isToday }) => ($isToday ? '3px solid #007acc' : 'none')};
+
   &:hover {
     background: ${({ bg }) => bg + '99'}; /* Simple transparency-based lighten */
     transform: scale(1.1);
@@ -111,7 +112,7 @@ function Calendar() {
     return (
       <Link key={i} href={`/date/${formattedDate}`} passHref>
         <button type="button">
-          <DayCircle istoday={isToday} bg={bg}>
+          <DayCircle key={i} bg={bg} $isToday={isToday}>
             {currentDate.date()}
           </DayCircle>
         </button>

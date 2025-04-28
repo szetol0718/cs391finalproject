@@ -1,7 +1,7 @@
 export type NoteType = {
     _id?: string;
     note: string,
-    id: number,
+    id?: number,
     date?: string,
 }
 

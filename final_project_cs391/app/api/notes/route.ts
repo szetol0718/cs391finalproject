@@ -5,22 +5,15 @@
 // - DELETE: Deletes a note based on its unique MongoDB ObjectId.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient, ObjectId } from 'mongodb';
-
-// MongoDB setup
-const uri = process.env.MONGO_URI!;
-const client = new MongoClient(uri);
-const dbName = 'final-project';
-const collectionName = 'note-collection';
+import getCollection, { NOTE_COLLECTION } from '@/db';
+import { ObjectId } from 'mongodb';
 
 // GET: Retrieve notes
 export async function GET(req: NextRequest) {
   const date = req.nextUrl.searchParams.get('date');
 
   try {
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    const collection = await getCollection(NOTE_COLLECTION);
 
     const notes = date
       ? await collection.find({ date }).toArray()
@@ -35,16 +28,14 @@ export async function GET(req: NextRequest) {
 
 // POST: Add a new note
 export async function POST(req: NextRequest) {
+  const { note, date } = await req.json();
+
+  if (!note || !date) {
+    return NextResponse.json({ error: 'Note and date are required' }, { status: 400 });
+  }
+
   try {
-    const { note, date } = await req.json();
-
-    if (!note || !date) {
-      return NextResponse.json({ error: 'Note and date are required' }, { status: 400 });
-    }
-
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    const collection = await getCollection(NOTE_COLLECTION);
 
     const result = await collection.insertOne({ note, date });
     return NextResponse.json(result);
@@ -54,18 +45,16 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE: Remove a note by ID
+// DELETE: Remove a note
 export async function DELETE(req: NextRequest) {
+  const { id } = await req.json();
+
+  if (!id) {
+    return NextResponse.json({ error: 'Note ID is required' }, { status: 400 });
+  }
+
   try {
-    const { id } = await req.json();
-
-    if (!id) {
-      return NextResponse.json({ error: 'Note ID is required' }, { status: 400 });
-    }
-
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    const collection = await getCollection(NOTE_COLLECTION);
 
     const result = await collection.deleteOne({ _id: new ObjectId(id) });
     return NextResponse.json(result);

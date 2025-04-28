@@ -4,7 +4,6 @@ import React from "react";
 import {Work_Sans} from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
-import Footer from "@/components/footer";
 const bgColor = `bg-teal-100`;
 const bodyStyling = `w-full items-center p-0 pb-5 flex flex-col ${bgColor}`;
 const workSansFont = Work_Sans({

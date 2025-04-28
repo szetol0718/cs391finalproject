@@ -3,23 +3,23 @@
 // - GET: Retrieves all tasks.
 // - POST: Adds a new task with optional due date.
 // - PATCH: Updates a task's completion status.
+// - DELETE: Deletes a task by ID.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient, ObjectId } from 'mongodb';
-
-// MongoDB setup
-const uri = process.env.MONGO_URI!;
-const client = new MongoClient(uri);
-const dbName = 'final-project';
-const collectionName = 'todo-collection';
+import getCollection, { TODO_COLLECTION } from '@/db';
+import { ObjectId } from 'mongodb';
 
 // GET: Retrieve all tasks
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const date = req.nextUrl.searchParams.get('date');
+
   try {
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
-    const tasks = await collection.find({}).toArray();
+    const collection = await getCollection(TODO_COLLECTION);
+
+    const tasks = date
+      ? await collection.find({ dueDate: date }).toArray()
+      : await collection.find({}).toArray();
+
     return NextResponse.json(tasks);
   } catch (error) {
     console.error('GET error:', error);
@@ -36,9 +36,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    const collection = await getCollection(TODO_COLLECTION);
 
     const newTask = {
       text,
@@ -59,17 +57,15 @@ export async function PATCH(req: NextRequest) {
   const { id, completed } = await req.json();
 
   if (!id || typeof completed !== 'boolean') {
-    return NextResponse.json({ error: 'Task ID and new completed status are required' }, { status: 400 });
+    return NextResponse.json({ error: 'Task ID and completed status are required' }, { status: 400 });
   }
 
   try {
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    const collection = await getCollection(TODO_COLLECTION);
 
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
-      { $set: { completed: completed } }
+      { $set: { completed } }
     );
 
     return NextResponse.json(result);
@@ -88,9 +84,7 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    const collection = await getCollection(TODO_COLLECTION);
 
     const result = await collection.deleteOne({ _id: new ObjectId(id) });
     return NextResponse.json(result);
