@@ -11,7 +11,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import dayjs, { Dayjs } from 'dayjs';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // --- Defines background colors for each day of the week ---
 const rainbowColors = [
@@ -84,6 +84,8 @@ function Calendar() {
   // Get today's date
   const today = dayjs();
 
+  const router = useRouter();
+
   // Track the first day of the currently selected month
   const [month, setMonth] = useState<Dayjs>(today.startOf('month'));
 
@@ -108,13 +110,11 @@ function Calendar() {
     const formattedDate = currentDate.format('YYYY-MM-DD'); // Format to link correctly
 
     return (
-      <Link key={i} href={`/date/${formattedDate}`} passHref>
-        <button type="button">
-          <DayCircle key={i} bg={bg} $isToday={isToday}>
+        <button key={i} type="button" onClick={() => router.push(`/date/${formattedDate}`)}>
+          <DayCircle bg={bg} $isToday={isToday}>
             {currentDate.date()}
           </DayCircle>
         </button>
-      </Link>
     );
   });
 

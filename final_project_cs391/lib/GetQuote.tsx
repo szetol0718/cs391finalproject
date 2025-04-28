@@ -4,9 +4,7 @@
 
 export default async function getQuote() {
   try {
-    const response = await fetch('https://dummyjson.com/quotes/random', {
-      cache: 'no-store',  // Don't cache result (optional, based on your needs)
-    });
+    const response = await fetch('https://dummyjson.com/quotes/random');
 
     if (!response.ok) {
       throw new Error('Failed to fetch quote');

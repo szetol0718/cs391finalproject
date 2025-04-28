@@ -10,8 +10,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NoteType, NumNotes } from "@/types";
+import AddNote from "@/lib/addNotes";
+import getAllNotes from "@/lib/getAllNotes";
 
 function TextDisplay({props}:{props:NoteType}) {
     return(
@@ -24,23 +26,50 @@ function TextDisplay({props}:{props:NoteType}) {
 
 export default function Notes({props}: {props: NumNotes}) {
 
+    // Use state variables which track notes' text content and ID for each note
     const [notes, setNotes] = useState<NoteType[]>([]);
     const [id, setId] = useState(0);
 
+    // fetchNotes function: retrieves list of all notes & updates useState variables with existing content
+    // Allows for display of persisting content (from database) + inputting new data later
+    useEffect(() => {
+        async function fetchNotes() {
+            try {
+                const storedNotes = await getAllNotes();
+                setNotes(storedNotes);
+                if (fetchNotes.length > 0) setId(fetchNotes.length);
+
+            } catch (err) {
+                console.error("Error fetching notes:", err);
+            }
+        }
+        fetchNotes();
+    }, [])
+
     // Function to run on formSubmit. Takes text-input, creates unique NoteType object,
     // enters it into the notes array, which will be mapped over to display all notes
-    function handleSubmit(formData: FormData) {
+    async function handleSubmit(formData: FormData) {
         const newNoteText = formData.get("note") as string;
         const newNoteDate = formData.get("date") as string;
-        const newNote = {
+        const newNote: NoteType = {
             id: id,
             note: newNoteText,
             date: newNoteDate
         };
 
-        if (props.max && id < props.max) {
+        function setBoth() {
             setId((prevNum) => prevNum + 1);
             setNotes((currentNotes) => [...currentNotes, newNote]);
+        }
+
+        if (props.max && id < props.max) {
+            // Updates MongoDB with the note added based on the form data
+
+            AddNote(newNote)
+                .then(() => setBoth())
+                .catch((err) => console.log("client-side add note error", err));
+
+            // Testing logs
             console.log("id:", id);
             console.log("notes:", notes);
             console.log("date:", newNoteDate);
