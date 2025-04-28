@@ -10,8 +10,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NoteType, NumNotes } from "@/types";
+import getAllNotes from "@/lib/getAllNotes";
+import getCollection, {NOTE_COLLECTION} from "@/db";
 
 function TextDisplay({props}:{props:NoteType}) {
     return(
@@ -24,12 +26,29 @@ function TextDisplay({props}:{props:NoteType}) {
 
 export default function Notes({props}: {props: NumNotes}) {
 
+    // Use state variables which track notes' text content and ID for each note
     const [notes, setNotes] = useState<NoteType[]>([]);
     const [id, setId] = useState(0);
 
+    // fetchNotes function: retrieves list of all notes & updates useState variables with existing content
+    // Allows for display of persisting content (from database) + inputting new data later
+    useEffect(() => {
+        async function fetchNotes() {
+            try {
+                const storedNotes = await getAllNotes();
+                setNotes(storedNotes);
+                if (fetchNotes.length > 0) setId(fetchNotes.length);
+
+            } catch (err) {
+                console.error("Error fetching notes:", err);
+            }
+        }
+        fetchNotes();
+    }, [])
+
     // Function to run on formSubmit. Takes text-input, creates unique NoteType object,
     // enters it into the notes array, which will be mapped over to display all notes
-    function handleSubmit(formData: FormData) {
+    async function handleSubmit(formData: FormData) {
         const newNoteText = formData.get("note") as string;
         const newNoteDate = formData.get("date") as string;
         const newNote = {
@@ -39,8 +58,20 @@ export default function Notes({props}: {props: NumNotes}) {
         };
 
         if (props.max && id < props.max) {
-            setId((prevNum) => prevNum + 1);
-            setNotes((currentNotes) => [...currentNotes, newNote]);
+            // Updates MongoDB with the note added based on the form data
+            try {
+                const noteCollection = await getCollection(NOTE_COLLECTION);
+                await noteCollection.insertOne(newNote);
+
+                // Updates useState variables with new data, from form entry -> used for display
+                setId((prevNum) => prevNum + 1);
+                setNotes((currentNotes) => [...currentNotes, newNote]);
+
+            } catch (err) {
+                console.error("Error fetching collection:", err);
+            }
+
+            // Testing logs
             console.log("id:", id);
             console.log("notes:", notes);
             console.log("date:", newNoteDate);
