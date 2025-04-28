@@ -25,11 +25,11 @@ export default function TodoList() {
   useEffect(() => {
     async function fetchTasks() {
       try {
-        // Fetches existing tasks from MongoDB by calling the server action 'getAllToDos'.
+        // Fetches existing tasks from MongoDB by calling the server action 'getAllToDos'
         const fetchedTasks = await getAllToDos();
         setTasks(fetchedTasks);
         //looked up online how to find the highest id stored in the mongodb database so that we could set the next task to an id 1 higher
-        const highestId = fetchedTasks.reduce((max, task) => Math.max(max, task.id), -1);
+        const highestId = Math.max(...fetchedTasks.map(task => task.id));
         setId(highestId);
       } catch (error) {
         console.error('Error fetching tasks:', error);
