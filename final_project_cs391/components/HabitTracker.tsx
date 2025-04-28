@@ -33,6 +33,7 @@ export default function HabitTracker() {
 
     const [rows, setRows] = useState<HabitWithLocalNotes[]>(defaultHabits); //initially was default habits but I changed it with tests
 
+    //get all the habits from the mongodb database using the helper function
     useEffect(() => { //get all the habits from mongodb
         async function fetchHabits() {
             const hTable = await getAllHabits();
