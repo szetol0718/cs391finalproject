@@ -16,7 +16,9 @@ export type NumNotes = {
     max?: number,
 }
 
-//individual habits
+
+//author: Leigh Brown
+//props used for habit tracker table
 export type HType = //different types of habits user can track
     "Health + Wellness" |
     "Household" |
@@ -29,7 +31,7 @@ export type HTrack = //different ways user can track habits
     "weekly" |
     "bi-weekly";
 
-//needed for the checkbox completion
+//needed for the checkbox completion and updating table/mongodb accordingly
 export type Day = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
 
 //each habit that is being tracked
