@@ -29,37 +29,14 @@ export default function Notes({props}:{props:NumNotes}) {
     const [id, setId] = useState(0);
     const [warning, setWarning] = useState('');
 
-    async function fetchNotesFromServer() {
-        const res = await fetch('/api/notes');
-        const data = await res.json();
-        return data;
-    }
-
-    async function postNoteToServer(newNote: { note: string; date: string }) {
-        const res = await fetch('/api/notes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newNote),
-        });
-        if (!res.ok) throw new Error('Failed to save note');
-    }
-
-    async function deleteNoteFromServer(noteId: string) {
-        const res = await fetch('/api/notes', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: noteId }),
-        });
-        if (!res.ok) throw new Error('Failed to delete note');
-    }
-
   // Fetch all notes from MongoDB on load
   useEffect(() => {
     async function fetchNotes() {
       try {
-        const data = await fetchNotesFromServer();
+        const res = await fetch('/api/notes');
+        const data = await res.json();
         setNotes(data);
-        setId(data.length);
+        setId(data.length); // set the current id counter
       } catch (error) {
         console.error('Failed to fetch notes:', error);
       }
@@ -80,27 +57,49 @@ export default function Notes({props}:{props:NumNotes}) {
         
         setWarning(''); // Clear warning if everything is valid
 
-        try {
-            await postNoteToServer({ note: newNoteText, date: newNoteDate });
-            const updatedData = await fetchNotesFromServer();
-            setNotes(updatedData);
-            setId(updatedData.length);
-            console.log('Note saved to MongoDB!');
-        } catch (error) {
-            console.error('Error saving note:', error);
-        }
-    }   
+        const newNote = {
+            note: newNoteText,
+            date: newNoteDate,
+        };
 
+        try {
+            const res = await fetch('/api/notes', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(newNote),
+         });
+
+         if (!res.ok) throw new Error('Failed to save note');
+
+         const updatedRes = await fetch('/api/notes');
+         const updatedData = await updatedRes.json();
+         setNotes(updatedData);
+         setId(updatedData.length);
+
+         console.log('Note saved to MongoDB!');
+        } catch (error) {
+         console.error('Error saving note:', error);
+        }
+}   
     async function handleDelete(noteId: string) {
         try {
-            await deleteNoteFromServer(noteId);
-            const updatedData = await fetchNotesFromServer();
-            setNotes(updatedData);
-            setId(updatedData.length);
-        } catch (error) {
-            console.error('Error deleting note:', error);
-        }
+        const res = await fetch('/api/notes', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: noteId }),
+      });
+  
+      if (!res.ok) throw new Error('Failed to delete note');
+  
+      // After deleting, refetch notes
+      const updated = await fetch('/api/notes');
+      const updatedData = await updated.json();
+      setNotes(updatedData);
+      setId(updatedData.length); // update id counter too
+    } catch (error) {
+      console.error('Error deleting note:', error);
     }
+  }
 
     // Note-adding component: Form with text-input and submit button
     function DefaultNote() {
