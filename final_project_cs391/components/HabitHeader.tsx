@@ -1,5 +1,5 @@
 //author: Leigh Brown
-//used to navigate btwn the habit tracker and archive page
+//used to navigate between the habit tracker and archive page
 "use client";
 import Link from "next/link";
 

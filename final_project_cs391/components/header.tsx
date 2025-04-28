@@ -5,7 +5,7 @@
 import Link from "next/link";
 
 const headerTextStyle = `text-4xl font-semibold p-4 text-white bg-teal-900`;
-const headerStyle = `bg-teal-900 w-screen flex flex-row items-center justify-between mb-8`
+const headerStyle = `bg-teal-900 w-screen flex flex-row flex-wrap items-center justify-between mb-8`
 const navLinkStyle = `text-white mx-5 mt-5 text-lg hover:text-yellow-300`;
 
 export default function Header() {
