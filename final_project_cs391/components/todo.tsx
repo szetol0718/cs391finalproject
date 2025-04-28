@@ -20,6 +20,7 @@ export default function TodoList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskText, setNewTaskText] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
+  const [id, setId] = useState(0);
 
   useEffect(() => {
     async function fetchTasks() {
@@ -27,6 +28,9 @@ export default function TodoList() {
         // Fetches existing tasks from MongoDB by calling the server action 'getAllToDos'.
         const fetchedTasks = await getAllToDos();
         setTasks(fetchedTasks);
+        //looked up online how to find the highest id stored in the mongodb database so that we could set the next task to an id 1 higher
+        const highestId = fetchedTasks.reduce((max, task) => Math.max(max, task.id), -1);
+        setId(highestId);
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
@@ -38,7 +42,7 @@ export default function TodoList() {
   const handleAddTask = async () => {
     if (newTaskText.trim() === '') return;
     const newTask: Task = {
-      id: Date.now(), // Generates a unique ID based on timestamp.
+      id: id,
       text: newTaskText,
       dueDate: newTaskDueDate || undefined,
       completed: false,
