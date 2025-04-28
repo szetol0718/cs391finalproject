@@ -10,7 +10,7 @@ export default function HabitTrackerPage() {
 
     return (
         <ThemeProvider theme={theme}>
-            <main className="min-h-screen w-full flex-col justify-center pb-5 text-blue-950 bg-blue-100">
+            <main className="min-h-screen w-full flex-col justify-center pb-5 text-green-950 bg-green-300">
 
                 <div className="w-[90%] items-center justify-center mt-0 m-auto">
                     <h1 className="text-4xl font-bold p-2 text-center">Weekly Habit Tracker</h1>

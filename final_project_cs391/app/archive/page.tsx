@@ -24,7 +24,7 @@ export default function ArchivePage() {
     }, []);
 
     return (
-        <main className="min-h-screen w-full flex-col justify-center pb-5 text-blue-950 bg-blue-100">
+        <main className="min-h-screen w-full flex-col justify-center pb-5 text-green-950 bg-green-300">
             <HabitTrackerHeader/>
             <h1 className="text-4xl font-bold mb-4 p-6 text-center">Archive</h1>
             <ArchiveDisplay inputArchives={archive} />
