@@ -7,13 +7,7 @@
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-
-// Define NoteType
-type NoteType = {
-  id: number;
-  note: string;
-  date: string;
-};
+import { Task,NoteType } from '@/types';
 
 export default function DatePage() {
   const params = useParams();
