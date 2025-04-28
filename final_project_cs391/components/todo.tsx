@@ -11,13 +11,7 @@
 
 "use client";
 import React, { useState, useEffect } from 'react';
-
-type Task = {
-  _id: string;
-  text: string;
-  dueDate?: string;
-  completed: boolean;
-};
+import { Task } from '@/types';
 
 async function fetchTasksFromServer() {
   const res = await fetch('/api/to-do');
@@ -146,7 +140,7 @@ export default function TodoList() {
             </div>
             <button
               onClick={() => handleDelete(task._id)}
-              className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+              className="bg-red-500 text-white text-xs px-2 py-0.5 rounded hover:bg-red-600"
             >
               Delete
             </button>

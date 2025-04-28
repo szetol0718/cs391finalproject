@@ -5,6 +5,13 @@ export type NoteType = {
     date?: string,
 }
 
+export type Task = {
+    _id: string;
+    text: string;
+    dueDate?: string;
+    completed: boolean;
+  };
+
 export type NumNotes = {
     max?: number,
 }
