@@ -12,8 +12,8 @@
 
 import { useState, useEffect } from "react";
 import { NoteType, NumNotes } from "@/types";
+import AddNote from "@/lib/addNotes";
 import getAllNotes from "@/lib/getAllNotes";
-import getCollection, {NOTE_COLLECTION} from "@/db";
 
 function TextDisplay({props}:{props:NoteType}) {
     return(
@@ -51,25 +51,23 @@ export default function Notes({props}: {props: NumNotes}) {
     async function handleSubmit(formData: FormData) {
         const newNoteText = formData.get("note") as string;
         const newNoteDate = formData.get("date") as string;
-        const newNote = {
+        const newNote: NoteType = {
             id: id,
             note: newNoteText,
             date: newNoteDate
         };
 
+        function setBoth() {
+            setId((prevNum) => prevNum + 1);
+            setNotes((currentNotes) => [...currentNotes, newNote]);
+        }
+
         if (props.max && id < props.max) {
             // Updates MongoDB with the note added based on the form data
-            try {
-                const noteCollection = await getCollection(NOTE_COLLECTION);
-                await noteCollection.insertOne(newNote);
 
-                // Updates useState variables with new data, from form entry -> used for display
-                setId((prevNum) => prevNum + 1);
-                setNotes((currentNotes) => [...currentNotes, newNote]);
-
-            } catch (err) {
-                console.error("Error fetching collection:", err);
-            }
+            AddNote(newNote)
+                .then(() => setBoth())
+                .catch((err) => console.log("client-side add note error", err));
 
             // Testing logs
             console.log("id:", id);
