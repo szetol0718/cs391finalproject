@@ -1,7 +1,7 @@
 //author: Leigh Brown
 //This is the habit tracker component. Here the user can change and track up to 10 habits using a table.
 // Table consists of 12 columns:
-// Col 1: Habit name - editable: user enters in the name of habit
+// Col 1: Habit name - editable: user enters the name of habit
 // Col 2: Habit type - 5 types of habits to choose from a select menu
 // Col 3: Habit Tracking - daily, weekly, and biweekly habits
 // Used also to track weekly completion
@@ -33,7 +33,7 @@ export default function HabitTracker() {
 
     const [rows, setRows] = useState<HabitWithLocalNotes[]>(defaultHabits); //initially was default habits but I changed it with tests
 
-    useEffect(() => {
+    useEffect(() => { //get all the habits from mongodb
         async function fetchHabits() {
             const hTable = await getAllHabits();
             setRows(hTable);
@@ -53,7 +53,7 @@ export default function HabitTracker() {
         }
     };
 
-    useEffect(() => {
+    useEffect(() => { //decide whether the habit table should be archived and reset for a new week
         const today = new Date(); //js date function
         const dayOfWeek = today.getDay(); //get the day of the week
 
@@ -90,6 +90,7 @@ export default function HabitTracker() {
                 <TableBody>
                     {rows.map((habit) => (
                         <TableRow key={habit.id}>
+                            {/*habit name (text) */}
                             <TableCell>
                                 <TextField
                                     value={habit.habit} variant="standard" size = "small"
@@ -102,6 +103,7 @@ export default function HabitTracker() {
                                     }}/>
                             </TableCell>
 
+                            {/*habit type (select) choose from 5 different habit types. uses MUI Select/MenuItem*/}
                             <TableCell>
                                 <Select
                                     value={habit.type} variant="outlined" size = "small"
@@ -123,6 +125,7 @@ export default function HabitTracker() {
                                 </Select>
                             </TableCell>
 
+                            {/*habit tracking. 3 ways to track habits. uses MUI Select/MenuItem*/}
                             <TableCell>
                                 <Select
                                     value={habit.tracking} variant="outlined" size = "small"
@@ -145,7 +148,8 @@ export default function HabitTracker() {
                                 </Select>
                             </TableCell>
 
-                            {/*so I can make one for each of the days without doing it manually for each*/}
+                            {/*Daily checkboxes, used to track completion of a habit for the week*/}
+                            {/*maps through the days of the week so i can make all 7 without having to rewrite the code*/}
                             {(["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as Day[]).map((day) => (
                                 <TableCell key={day} align="center" sx={{ padding: "2px", width: "30px" }}>
                                     <Checkbox
@@ -155,10 +159,12 @@ export default function HabitTracker() {
                                 </TableCell>
                             ))}
 
+                            {/*showcases the percentage of that habit completed for the week*/}
                             <TableCell sx={{ width: "30px" }}>{habit.weeklyCompleted}%</TableCell>
 
                             {/*looked up online how to only update this when user pressed enter instead of*/}
                             {/*after every keystroke*/}
+                            {/*notes about the habit that users can add as they see fit*/}
                             <TableCell>
                                 <TextField
                                     value={(habit.localNotes ?? habit.notes) || ""}
