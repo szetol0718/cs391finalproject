@@ -16,7 +16,7 @@ export type NumNotes = {
 
 //author: Arooj Kamran
 export type Task = {
-    _id: string;
+    id: number;
     text: string;
     dueDate?: string;
     completed: boolean;
