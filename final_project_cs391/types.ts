@@ -1,8 +1,17 @@
+// Author: Ajani Hickling
+// Description: NoteType has types for note text, date, ID for mapping and ID for mongoDB storage
 export type NoteType = {
-    _id?: string;
+    // _id?: string;
     note: string,
     id?: number,
     date?: string,
+}
+
+// Author: Ajani Hickling
+// Description: NumNotes has optional maximum value. This type can be used to vary the number of notes displayed,
+// depending on where the Notes component is displayed
+export type NumNotes = {
+    max?: number,
 }
 
 export type Task = {
@@ -12,9 +21,6 @@ export type Task = {
     completed: boolean;
   };
 
-export type NumNotes = {
-    max?: number,
-}
 
 //author: Leigh Brown
 //props used for habit tracker table
