@@ -16,7 +16,6 @@ export type NumNotes = {
     max?: number,
 }
 
-
 //author: Leigh Brown
 //props used for habit tracker table
 export type HType = //different types of habits user can track
