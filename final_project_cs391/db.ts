@@ -12,6 +12,7 @@ import {MongoClient, Db, Collection} from 'mongodb';
  export const ARCHIVE_COLLECTION = "archive-collection";  // archive collection (Leigh)
  export const NOTE_COLLECTION = "note-collection";
  export const TODO_COLLECTION = "todo-collection"; 
+ export const MOOD_COLLECTION = "mood-collection";
  
  let client: MongoClient | null = null;
  let db: Db | null = null;

@@ -14,6 +14,11 @@ export type NumNotes = {
     max?: number,
 }
 
+export interface MoodType {
+    mood: string;
+    date: string;
+  }
+  
 //author: Arooj Kamran
 // props used for todo list
 export type Task = {

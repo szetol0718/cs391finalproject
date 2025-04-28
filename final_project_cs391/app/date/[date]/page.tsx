@@ -9,6 +9,9 @@ import dayjs from 'dayjs';
 import getQuote from '@/lib/GetQuote';
 import { getAllToDos, toggleComplete } from '@/lib/updateToDos';
 import { Task } from '@/types';
+import getAllMoods from '@/lib/updateMoods';
+import { saveMood } from '@/lib/updateMoods';
+import { MoodType } from '@/types';
 
 export default function DatePage() {
   const params = useParams();
@@ -17,6 +20,8 @@ export default function DatePage() {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('');
   const [todos, setTodos] = useState<Task[]>([]);
+  const [mood, setMood] = useState<string | null>(null);
+  const [allMoods, setAllMoods] = useState<MoodType[]>([]);
 
   // Fetch the quote when the page loads
   useEffect(() => {
@@ -45,6 +50,32 @@ export default function DatePage() {
     }
     fetchTodos();
   }, [date]);
+
+  useEffect(() => {
+    async function fetchMoods() {
+      try {
+        const moods = await getAllMoods();
+        setAllMoods(moods);
+        const todayMood = moods.find((m) => m.date === date);
+        if (todayMood) {
+          setMood(todayMood.mood);
+        }
+      } catch (err) {
+        console.error('Failed to fetch moods:', err);
+      }
+    }
+    fetchMoods();
+  }, [date]);
+
+  async function handleMoodSelect(selectedMood: string) {
+    setMood(selectedMood);
+
+    try {
+      await saveMood({ date, mood: selectedMood });
+    } catch (error) {
+      console.error('Failed to save mood:', error);
+    }
+  }
 
   // Handle toggling completion of a task
   async function handleToggle(id: number, currentStatus: boolean) {
@@ -79,6 +110,25 @@ export default function DatePage() {
             – {author}
           </p>
         </>
+      )}
+
+      {/* Mood Tracker */}
+      <h2 className="text-xl font-semibold mt-8 mb-4">Mood of the Day</h2>
+      <div className="flex space-x-4 text-4xl mb-4">
+        {["😄", "😐", "😢", "😡", "🥳"].map((emoji) => (
+          <button
+            key={emoji}
+            onClick={() => handleMoodSelect(emoji)}
+            className="hover:scale-110 transition-transform"
+          >
+            {emoji}
+          </button>
+        ))}
+      </div>
+      {mood && (
+        <p className="text-lg">
+          Your mood today: <span className="text-2xl">{mood}</span>
+        </p>
       )}
 
       {/* Display Todos */}
