@@ -29,7 +29,10 @@ export default function TodoList() {
         const fetchedTasks = await getAllToDos();
         setTasks(fetchedTasks);
         //looked up online how to find the highest id stored in the mongodb database so that we could set the next task to an id 1 higher
-        const highestId = Math.max(...fetchedTasks.map(task => task.id));
+        //it also checks that the to do list isn't empty and if so makes the next task have an id of 0
+        const highestId = fetchedTasks.length > 0
+            ? Math.max(...fetchedTasks.map(task => task.id))
+            : -1;
         setId(highestId);
       } catch (error) {
         console.error('Error fetching tasks:', error);
