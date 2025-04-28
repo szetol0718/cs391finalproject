@@ -9,8 +9,6 @@ import dayjs from 'dayjs';
 import getQuote from '@/lib/GetQuote';
 import { getAllToDos, toggleComplete } from '@/lib/updateToDos';
 import { Task } from '@/types';
-import getAllNotes from '@/lib/getAllNotes';
-import { NoteType } from '@/types';
 
 export default function DatePage() {
   const params = useParams();
@@ -19,7 +17,6 @@ export default function DatePage() {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('');
   const [todos, setTodos] = useState<Task[]>([]);
-  const [notes, setNotes] = useState<NoteType[]>([]);
 
   // Fetch the quote when the page loads
   useEffect(() => {
@@ -47,19 +44,6 @@ export default function DatePage() {
       }
     }
     fetchTodos();
-  }, [date]);
-
-  useEffect(() => {
-    async function fetchNotes() {
-      try {
-        const allNotes = await getAllNotes();
-        const filteredNotes = allNotes.filter((note) => note.date === date);
-        setNotes(filteredNotes);
-      } catch (err) {
-        console.error('Failed to fetch notes:', err);
-      }
-    }
-    fetchNotes();
   }, [date]);
 
   // Handle toggling completion of a task
@@ -95,20 +79,6 @@ export default function DatePage() {
             – {author}
           </p>
         </>
-      )}
-
-      {/* Display Notes */}
-      <h2 className="text-xl font-semibold mt-8 mb-4">Notes</h2>
-      {notes.length > 0 ? (
-        <ul className="space-y-2">
-          {notes.map((note) => (
-            <li key={note.id} className="flex items-center gap-3 p-2 bg-yellow-100 rounded shadow">
-                {note.note}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-500 italic">No notes for this day.</p>
       )}
 
       {/* Display Todos */}
