@@ -56,17 +56,13 @@ export default function HabitTracker() {
 
     useEffect(() => { //decide whether the habit table should be archived and reset for a new week
         const today = new Date(); //js date function
-        const dayOfWeek = today.getDay(); //get the day of the week
 
-        // archive week's habits every sunday
-        if (dayOfWeek === 0) {
-            const lastWeekStart = getLastSunday(today);
-            const lastWeekEnd = getLastSaturday(today);
+        const lastWeekStart = getLastSunday(today);
+        const lastWeekEnd = getLastSaturday(today);
 
-            archiveCurrentWeek(lastWeekStart, lastWeekEnd)
-                .then(() => resetHabits())
-                .catch((err) => console.error("failed to archive week", err));
-        }
+        archiveCurrentWeek(lastWeekStart, lastWeekEnd)
+            .then(() => resetHabits())
+            .catch((err) => console.error("failed to archive week", err));
     }, []);
 
     return (
