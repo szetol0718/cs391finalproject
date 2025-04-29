@@ -11,7 +11,7 @@ const navLinkStyle = `text-white mx-5 mt-5 text-lg hover:text-yellow-300`;
 export default function Header() {
   return (
     <header className={headerStyle}>
-      <h1 className={headerTextStyle}>SimpleFlow</h1>
+      <h1 className={headerTextStyle}>PlanPal</h1>
       <nav className="flex justify-center mb-4">
         <Link href="/" className={navLinkStyle}>Home</Link>
         <Link href="/notes" className={navLinkStyle}>Notes</Link>
