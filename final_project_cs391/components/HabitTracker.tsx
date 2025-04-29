@@ -60,9 +60,13 @@ export default function HabitTracker() {
         const lastWeekStart = getLastSunday(today);
         const lastWeekEnd = getLastSaturday(today);
 
-        archiveCurrentWeek(lastWeekStart, lastWeekEnd)
-            .then(() => resetHabits())
-            .catch((err) => console.error("failed to archive week", err));
+        const weekEnd = new Date(lastWeekEnd);
+
+        if (weekEnd < today) { //make sure that the current week we are in isn't accidentally archived
+            archiveCurrentWeek(lastWeekStart, lastWeekEnd)
+                .then(() => resetHabits())
+                .catch((err) => console.error("failed to archive week", err));
+        }
     }, []);
 
     return (
