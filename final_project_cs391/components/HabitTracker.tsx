@@ -70,7 +70,7 @@ export default function HabitTracker() {
     }, []);
 
     return (
-        <TableContainer className ="w-full bg-white">
+        <TableContainer className ="w-full bg-white opacity-60">
             <Table stickyHeader={true}>
                 <TableHead>
                     <TableRow>
