@@ -55,7 +55,7 @@ export default function TodoList() {
 
     try {
       // Calls server action 'addTodo' to save the new task into MongoDB.
-      await addTodo(newTask); // <- call server action
+      await addTodo(newTask); // call server action
       setTasks([...tasks, newTask]);
       setNewTaskText('');
       setNewTaskDueDate('');
@@ -90,30 +90,40 @@ export default function TodoList() {
   });
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      {/* Main container styled with Tailwind CSS classes for padding and centering. */}
-      <h1 className="text-2xl font-bold mb-4">Todo List</h1>
-      <div className="flex flex-col gap-2 mb-4">
+    <div className="my-5 mx-2 w-1/2">
+      {/* Match the Notes page setup for width */}
+      <h1 className="underline underline-offset-3 font-semibold text-lg text-justify">
+        Todo List
+      </h1>
+  
+      <form className="flex flex-row mb-4 gap-2">
+        {/* Flex-row form like Notes */}
+  
         <input
           type="text"
           placeholder="New task"
           value={newTaskText}
           onChange={(e) => setNewTaskText(e.target.value)}
-          className="p-2 border rounded"
+          className="flex-1 p-2 border rounded"
         />
-        {/* Text input for the task description */}
+        {/* Wide text box by flex-grow (flex-1) */}
+  
         <input
           type="date"
           value={newTaskDueDate}
           onChange={(e) => setNewTaskDueDate(e.target.value)}
           className="p-2 border rounded"
         />
-        {/* Optional date input for task's due date */}
-        <button onClick={handleAddTask} className="bg-blue-500 text-white p-2 rounded">
-          Add Task
+        <button
+          onClick={handleAddTask}
+          type="button"
+          className="m-3 py-0.5 px-2.5 text-lg rounded-xl opacity-70
+                     text-gray-900 bg-blue-300 border-2 border-blue-800"
+        >
+          +
         </button>
-      </div>
-
+      </form>
+  
       <ul className="space-y-2">
         {/* List of existing tasks */}
         {sortedTasks.map((task) => (
@@ -123,12 +133,9 @@ export default function TodoList() {
               checked={task.completed}
               onChange={() => handleToggleComplete(task.id)}
             />
-            {/* Checkbox for marking task completed or not */}
             <div className={`flex-1 ${task.completed ? 'line-through text-gray-500' : ''}`}>
               <div className="font-semibold">{task.text}</div>
-              {task.dueDate && (
-                <div className="text-sm">{`Due: ${task.dueDate}`}</div>
-              )}
+              {task.dueDate && <div className="text-sm">{`Due: ${task.dueDate}`}</div>}
             </div>
           </li>
         ))}
