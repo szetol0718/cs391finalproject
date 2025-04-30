@@ -4,7 +4,7 @@ import { createTheme } from '@mui/material/styles'; //didn't like the blue focus
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#5571b8',
+            main: '#407e69',
         },
     },
 
