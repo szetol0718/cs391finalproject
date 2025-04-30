@@ -13,6 +13,9 @@
 import { useState } from "react";
 import { NoteType, NumNotes } from "@/types";
 
+// Text display component displays the note text generated, and associated date info (if it was provided)
+// This component retrieves data from form submission
+// If a date was provided, it is shown.
 function TextDisplay({props}:{props:NoteType}) {
     return(
         <div className={`flex flex-row`}>
@@ -22,6 +25,8 @@ function TextDisplay({props}:{props:NoteType}) {
     );
 }
 
+// Default function : takes an (optional) max number of notes, and renders a form from which notes can be generated
+// Generated notes are then displayed
 export default function Notes({props}: {props: NumNotes}) {
     const [notes, setNotes] = useState<NoteType[]>([]);
     const [id, setId] = useState(0);
@@ -29,16 +34,21 @@ export default function Notes({props}: {props: NumNotes}) {
     // Function to run on formSubmit. Takes text-input, creates unique NoteType object,
     // enters it into the notes array, which will be mapped over to display all notes
     function handleSubmit(formData: FormData) {
+        // retrieves submitted data : note text and optional date field
         const newNoteText = formData.get("note") as string;
         const newNoteDate = formData.get("date") as string;
 
+        // creates new noteType object
         const newNote = {
             id: id,
             note: newNoteText,
             date: newNoteDate
         };
 
-        if (props.max && id < props.max) {
+        // two possible cases are facilitated:
+        // CASE 1: a maximum number of notes was not declared, so notes can be created continuously without restriction
+        // CASE 2: There exists a maximum number. So long as the ID (which starts at 0) is less than the max, notes will be created.
+        if ((props.max && id < props.max) || (!props.max)) {
             setId((prevNum) => prevNum + 1);
             setNotes((currentNotes) => [...currentNotes, newNote]);
             console.log("id:", id);
@@ -48,6 +58,8 @@ export default function Notes({props}: {props: NumNotes}) {
         }
     }
 
+    // Default note represents the data entry component (users can enter text and (optionally) an associated date)
+    // flex-1/2 in first input ensures data input and add button are right aligned, regardless of note text
     function DefaultNote() {
         return(
             <form action={handleSubmit} className={`flex flex-row`}>
@@ -56,6 +68,7 @@ export default function Notes({props}: {props: NumNotes}) {
                     name={"note"}
                     placeholder={`Add a note...`}
                     required={true}  // can enter a note without a date, cannot enter a note without text
+                    className={`flex-1/2`}
                 />
                 <input
                     type="date" id={"date"}
@@ -83,6 +96,7 @@ export default function Notes({props}: {props: NumNotes}) {
                 Leave Yourself Some Notes!
             </h2>
             {
+                // Maps over notes, producing divs of each, separated by a horizontal line
                 // If there was no declared max, all notes are displayed
                 // If max notes was set, only that many notes are displayed
                 notes.map((note:NoteType) => (
